@@ -78,9 +78,25 @@ Arithmetic checks out: `301.65 STD + 71.27 receptions = 372.92 PPR`.
 and read `stats.points_ppr`.** The shared PPR constant still governs `consensus-rankings`
 and `player-points`, which both honour it properly.
 
-Note this also means projections *does* expose half-PPR. `CLAUDE.md`'s ban on half-PPR
-still stands, but the reason is narrower than stated: `player-points` is the endpoint
-that only supports STD and PPR, so half would misalign the **last-season** factor only.
+### Half-PPR is fully supported — the original ban was based on a false premise
+
+`CLAUDE.md` originally said half-PPR was impossible because "`player-points` only accepts
+STD and PPR." **That is not true.** `player-points` honours `scoring=HALF`, returning a
+third distinct set of values — and STD even yields a different top WR:
+
+```
+scoring=STD   → top WR Jaxon Smith-Njigba, 232.5
+scoring=HALF  → top WR Puka Nacua,         289.49999999999994
+scoring=PPR   → top WR Puka Nacua,         349
+```
+
+(Tested on WRs specifically. An earlier attempt using kickers and team defenses proved
+nothing, since those score identically in all three formats — worth remembering when
+spot-checking scoring changes.)
+
+Combined with `stats.points_half` on projections, **both factors can supply half-PPR**.
+It remains out of scope by choice, but it is a legitimate third option for DRAFT-41's
+scoring toggle rather than a technical impossibility.
 
 ---
 
@@ -124,9 +140,12 @@ Four distinct categories. The client must distinguish all four.
 
 Several bad inputs succeed while quietly ignoring what you asked:
 
-- `scoring=HALF` on player-points → 200, echoes `"HALF"`
 - omitting `positions` on projections → 200, silently defaults to `positions: "RB"`
-- `/1999/` season → 200, returns current season
+- `scoring=PPR` on projections → 200, silently returns STD (see §3)
+- `/1999/` season → 200, returns the current season
+
+(`scoring=HALF` on player-points also returns 200 and echoes `"HALF"` — but that one is
+genuine, not a silent ignore. See §3.)
 
 **Never treat 200 as "got what I asked for."** Echo-check the response fields
 (`year`, `scoring`, `positions`, `position_id`) against the request. This is the single
