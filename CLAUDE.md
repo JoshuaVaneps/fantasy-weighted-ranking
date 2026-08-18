@@ -72,23 +72,68 @@ default.
 
 ## API rules
 
+Verified against the live API in DRAFT-6. Payloads, error bodies, and the evidence
+behind every rule below: `docs/api-notes.md`.
+
 - Base path is `/public/v2/json/nfl/`. That's the tier we're on, and it exposes a
   different endpoint set than the general `/v2/` docs — including `injuries`.
+- **There are two path shapes.** Season-scoped data is `/{season}/{endpoint}`
+  (`consensus-rankings`, `projections`, `player-points`). Everything else lives at the
+  root with no season segment (`/injuries`, `/players`, `/news`). Calling one under the
+  wrong shape returns a 403 that looks like a permissions problem but isn't — **when an
+  endpoint 403s, try the other shape before concluding it doesn't exist.**
 - Auth is the `x-api-key` **header**. Never a query parameter, never inlined in source.
-- **PPR everywhere.** Every call sends `scoring=PPR`, read from one shared constant.
-  Do not hardcode the format per call — a future STD toggle should be a one-line change.
-- **Half-point PPR is deliberately unsupported.** `player-points` only accepts STD and
-  PPR, so half would leave the last-season factor misaligned. Don't add it.
-- **All feeds join on the FantasyPros id.** It's `player_id` in consensus rankings and
-  player-points, and `fpid` in projections. Same number, two names.
+- **PPR everywhere.** `consensus-rankings` and `player-points` honour `scoring=PPR`,
+  read from one shared constant. Do not hardcode the format per call — the STD toggle
+  should be a one-line change.
+- **projections ignores `scoring` completely** and always returns STD. Read PPR from
+  `stats.points_ppr` on each player instead. The query param is not a fallback there —
+  it does nothing at all.
+- **Half-PPR is available** on both factors: `scoring=HALF` on player-points,
+  `stats.points_half` on projections. Out of scope for now, but a legitimate third
+  option for DRAFT-41's toggle rather than a technical impossibility.
+- **All feeds join on the FantasyPros id.** It's `player_id` in consensus rankings,
+  player-points, and injuries, and `fpid` in projections. Same number, two names.
 - **Consensus rankings is the spine.** It's the only feed with bye week and tier, and
   its team values are current-season. Build the player list from it, enrich from others.
 - Only projections needs a position list (colon-delimited `positions`). Consensus
-  accepts `position=ALL` and player-points defaults to `ALL`.
+  accepts `position=ALL` and player-points defaults to `ALL`. **Omitting `positions` on
+  projections silently defaults to `RB`** — always send it explicitly.
 - **Injury status is display only.** It drives a badge and never touches the score —
   how to weigh an injury is the user's judgement, not the app's.
+
+### Guarding the boundary
+
+- **A 200 does not mean you got what you asked for.** Bad input is silently ignored: a
+  missing `positions`, an unsupported `scoring`, an out-of-range season all return 200
+  with the wrong data and no warning. Echo-check `year`, `scoring`, and `positions` in
+  the response against what you requested.
+- **Out-of-range seasons fall back to the current year** rather than erroring. Read
+  `year` back from the payload; never trust the path you sent.
+- **Never use `count` as the array length.** It describes the requested filter, not the
+  payload. Use `players.length`.
+- **429s carry no `Retry-After` and no `X-RateLimit-*` headers.** Rate limiting is real
+  and unadvertised, so back off exponentially on your own schedule — there is no
+  server-supplied delay to read.
+- **A 403 has two meanings.** `{"message":"Forbidden"}` is auth;
+  `{"message":"Missing Authentication Token"}` is API Gateway's 404. Never report a
+  wrong path as an authentication failure.
 - Expect type drift: `count` is a number in one payload and a string in another, and
   points arrive like `195.29999999999998`. Guard at the boundary, round for display.
+
+### The proxy is not optional
+
+The `OPTIONS` preflight returns 403 with zero CORS headers, and `x-api-key` is not a
+CORS-safelisted header — so the browser is *required* to preflight, and no browser call
+can ever succeed at any origin. A browser-side key would also be a public key.
+
+A server-side proxy is therefore required in **dev and production**. A static-only
+deploy cannot work.
+
+Upstream sends `cache-control: max-age=1200` through CloudFront, and **the cache key
+does not include `x-api-key`** — responses can be up to 20 minutes stale and can reflect
+a different key's tier. That 20 minutes is also a defensible default TTL for the app's
+own cache layer (DRAFT-30).
 
 ## Visual rules
 
