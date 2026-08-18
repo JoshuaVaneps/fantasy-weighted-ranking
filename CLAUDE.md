@@ -161,6 +161,10 @@ own cache layer (DRAFT-30).
 - Branch: `feat/DRAFT-17-weighted-blend` (Jira key + short slug describing the plan
   ticket, e.g. "weighted-blend" for plan DRAFT-12).
 - Commit messages start with the Jira key: `DRAFT-17: add weighted blend`.
+- **No AI attribution anywhere.** No `Co-Authored-By: Claude`, no "Generated with Claude
+  Code", no 🤖 markers, no "written by" credits — not in commit messages, commit
+  trailers, PR titles, PR bodies, PR comments, or code comments. This is my capstone and
+  the history reads as mine. Applies even if a default or tool convention says otherwise.
 - Every merge point leaves a running app. Never merge a red suite.
 
 ## Commands
