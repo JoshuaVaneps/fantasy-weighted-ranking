@@ -2,7 +2,31 @@
   "permissions": {
     "allow": [
       "Bash(npm -v)",
-      "Bash(curl --version)"
+      "Bash(curl --version)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git ls-remote *)",
+      "PowerShell($c = Get-Command gh -ErrorAction SilentlyContinue; if \\($c\\) { \"FOUND: $\\($c.Source\\)\"; gh --version } else { \"gh not installed\"; \"checking common locations...\"; @\\(\"$env:ProgramFiles\\\\GitHub CLI\\\\gh.exe\",\"$env:LOCALAPPDATA\\\\GitHubCLI\\\\gh.exe\",\"${env:ProgramFiles\\(x86\\)}\\\\GitHub CLI\\\\gh.exe\"\\) | ForEach-Object { if \\(Test-Path $_\\) { \"  exists: $_\" } else { \"  absent: $_\" } } })",
+      "Bash(git push *)",
+      "PowerShell($w = Get-Command winget -ErrorAction SilentlyContinue; if \\($w\\) { \"winget: $\\($w.Source\\)\"; winget --version } else { \"winget absent\" }; $s = Get-Command scoop -ErrorAction SilentlyContinue; if \\($s\\) { \"scoop: $\\($s.Source\\)\" } else { \"scoop absent\" }; $ch = Get-Command choco -ErrorAction SilentlyContinue; if \\($ch\\) { \"choco: $\\($ch.Source\\)\" } else { \"choco absent\" })",
+      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"Machine\"\\) + \";\" + [System.Environment]::GetEnvironmentVariable\\(\"Path\",\"User\"\\); $c = Get-Command gh -ErrorAction SilentlyContinue; if \\($c\\) { \"gh: $\\($c.Source\\)\"; gh --version | Select-Object -First 1; \"--- auth ---\"; gh auth status } else { \"still not found on refreshed PATH\" })",
+      "PowerShell(\"GH_TOKEN set: \" + [bool]$env:GH_TOKEN; \"GITHUB_TOKEN set: \" + [bool]$env:GITHUB_TOKEN; \"--- user-scope env ---\"; foreach \\($n in @\\(\"GH_TOKEN\",\"GITHUB_TOKEN\"\\)\\) { $v = [System.Environment]::GetEnvironmentVariable\\($n,\"User\"\\); \"${n}: \" + $\\(if \\($v\\) { \"set\" } else { \"not set\" }\\) }; \"--- git credential helper ---\"; git config --get credential.helper)",
+      "Bash(cd /c/Users/joshu/Downloads && ls -la capstone1buildplan*.html && echo \"--- identical? ---\" && if diff -q \"capstone1buildplan.html\" \"capstone1buildplan \\(1\\).html\" >/dev/null 2>&1; then echo \"identical\"; else echo \"DIFFER\"; echo \"line counts:\"; wc -l capstone1buildplan.html \"capstone1buildplan \\(1\\).html\"; fi && echo \"--- does either mention DRAFT-36 / half-PPR? \\(sanity check it is the plan we reviewed\\) ---\" && grep -c \"DRAFT-36\" capstone1buildplan.html)",
+      "Read(//c/Users/joshu/Downloads/**)",
+      "Bash(cd \"c:/Users/joshu/OneDrive/Desktop/CWM/Front-End-Learning/fantasy-weighted-ranking\" && cp \"/c/Users/joshu/Downloads/capstone1buildplan \\(1\\).html\" docs/build-plan.html && ls -la docs/ && echo \"--- sanity: reference now resolves ---\" && test -f docs/build-plan.html && echo \"docs/build-plan.html present \\($\\(wc -l < docs/build-plan.html\\) lines\\)\")",
+      "Bash(git config *)",
+      "Bash(echo \"  user.name:  $\\(git config user.name\\)\")",
+      "Bash(echo \"  user.email: $\\(git config user.email\\)\")",
+      "Bash(echo \"  local  name:  $\\(git config --local user.name\\)\")",
+      "Bash(echo \"  local  email: $\\(git config --local user.email\\)\")",
+      "Bash(echo \"  global email \\(untouched\\): $\\(git config --global user.email\\)\")",
+      "Bash(echo \"  $\\(git config user.name\\) <$\\(git config user.email\\)>\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\joshu\\Downloads"
     ]
   }
 }
