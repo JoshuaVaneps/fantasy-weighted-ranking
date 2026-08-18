@@ -1,0 +1,8 @@
+dist
+coverage
+package-lock.json
+
+# capstone docs and settings — not this project's source, don't reformat
+CLAUDE.md
+docs/
+.claude/
