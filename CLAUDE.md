@@ -77,8 +77,11 @@ behind every rule below: `docs/api-notes.md`.
 
 - Base path is `/public/v2/json/nfl/`. That's the tier we're on, and it exposes a
   different endpoint set than the general `/v2/` docs — including `injuries`.
-- **`injuries` takes no season segment.** It's `/injuries`, not `/{season}/injuries`,
-  which is the one break in the otherwise uniform `/{season}/{endpoint}` shape.
+- **There are two path shapes.** Season-scoped data is `/{season}/{endpoint}`
+  (`consensus-rankings`, `projections`, `player-points`). Everything else lives at the
+  root with no season segment (`/injuries`, `/players`, `/news`). Calling one under the
+  wrong shape returns a 403 that looks like a permissions problem but isn't — **when an
+  endpoint 403s, try the other shape before concluding it doesn't exist.**
 - Auth is the `x-api-key` **header**. Never a query parameter, never inlined in source.
 - **PPR everywhere.** `consensus-rankings` and `player-points` honour `scoring=PPR`,
   read from one shared constant. Do not hardcode the format per call — the STD toggle

@@ -31,8 +31,42 @@ that breaks the `/{season}/{endpoint}` pattern.
 | Player points | `/{season}/player-points` | `scoring=PPR` | 734 (2025) |
 | Injuries | `/injuries` — **no season** | none | 117 |
 
-`/{season}/injuries` returns 403. So do `/adp`, `/players`, `/depth-charts`, `/news` —
-those endpoints do not exist on this tier at any path tried.
+### Two path shapes, not one
+
+`injuries` is not the only season-less endpoint. **Anything that isn't season-scoped data
+lives at the root**, and testing it under `/{season}/` returns a misleading 403:
+
+| Path | Result |
+|---|---|
+| `/players` | **200** — master list, 8524 players |
+| `/news` | **200** |
+| `/injuries` | **200** — 117 records |
+| `/{season}/players`, `/{season}/injuries` | 403 (wrong path, not a permissions problem) |
+| `/adp`, `/depth-charts`, `/teams` | 403 at both shapes — genuinely absent |
+
+**When an endpoint 403s, try the other path shape before concluding it doesn't exist.**
+
+### `/players` master list (fallback / future ADP source)
+
+8524 players, `tier: premium`, no cap. Carries ranks the other feeds don't:
+
+```
+player_id, player_name, short_name, first_name, last_name, reverse_name,
+position_id, positions[], team_id, filename, sportsdata_player_id,
+rank_ecr, rank_adp, rank_ecr_ppr, rank_adp_ppr, rank_ecr_half,
+birthdate, age, draft_class
+```
+
+Two traps:
+
+1. **It is an all-time roster, not an active one.** Danny Amendola (retired, `team_id: "FA"`)
+   is in it. Inactive players carry `rank_* = 0`, which means *unranked* — a naive
+   ascending sort puts every retired player at the top.
+2. **`filename` is a full URL here** (`https://www.fantasypros.com/nfl/players/danny-amendola.php`)
+   but a bare `jahmyr-gibbs.php` in the other feeds. Same field name, different shape —
+   normalise before using it as a fallback key.
+
+It has no bye week and no tier, so it does not replace consensus as the spine.
 
 ### Season segment
 
