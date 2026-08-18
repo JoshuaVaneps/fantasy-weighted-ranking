@@ -19,11 +19,14 @@ Architecture and API notes live in [`docs/api-notes.md`](docs/api-notes.md).
 
 ## Scripts
 
-| Command                | Does                             |
-| ---------------------- | -------------------------------- |
-| `npm run dev`          | Start the Vite dev server        |
-| `npm run build`        | Production build                 |
-| `npm run preview`      | Preview the production build     |
-| `npm run lint`         | Check code with ESLint           |
-| `npm run format`       | Format code with Prettier        |
-| `npm run format:check` | Check formatting without writing |
+| Command                 | Does                             |
+| ----------------------- | -------------------------------- |
+| `npm run dev`           | Start the Vite dev server        |
+| `npm run build`         | Production build                 |
+| `npm run preview`       | Preview the production build     |
+| `npm test`              | Run the test suite once          |
+| `npm run test:watch`    | Run tests in watch mode          |
+| `npm run test:coverage` | Run tests with a coverage report |
+| `npm run lint`          | Check code with ESLint           |
+| `npm run format`        | Format code with Prettier        |
+| `npm run format:check`  | Check formatting without writing |
