@@ -5,8 +5,15 @@ consensus (ECR), last season's production, and current-season projections. Weigh
 adjustable and the board re-sorts live. Manual pins override the math. Boards are saved
 per draft.
 
-Build plan, math, and the full ticket list live in [`docs/build-plan.html`](docs/build-plan.html).
+Build plan, math, and the full ticket list live in [`docs/buildplan.html`](docs/buildplan.html).
 Architecture and API notes live in [`docs/api-notes.md`](docs/api-notes.md).
+
+## Status
+
+**M1 (Walking Skeleton) is complete:** real players from the joined FantasyPros feeds
+render on screen, sorted by consensus rank, plus an ADP column pulled from the player
+master list. See [`docs/m1-wrapup.md`](docs/m1-wrapup.md) for what shipped, the
+deviations taken, and what M2 (the weighted blend and drag-to-rank UI) needs next.
 
 ## Setup
 
@@ -30,3 +37,4 @@ Architecture and API notes live in [`docs/api-notes.md`](docs/api-notes.md).
 | `npm run lint`          | Check code with ESLint           |
 | `npm run format`        | Format code with Prettier        |
 | `npm run format:check`  | Check formatting without writing |
+| `npm run capture`       | Refresh `/fixtures` from the live API — run rarely |

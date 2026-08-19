@@ -41,6 +41,18 @@ function projectionsPlayer(overrides = {}) {
   }
 }
 
+function masterListPlayer(overrides = {}) {
+  return {
+    player_id: 1,
+    player_name: 'Test Player',
+    position_id: 'WR',
+    team_id: 'KC',
+    rank_adp: 10,
+    rank_adp_ppr: 8,
+    ...overrides,
+  }
+}
+
 describe('joinPlayers', () => {
   it('merges a player present in all three feeds', () => {
     const result = joinPlayers({
@@ -61,6 +73,7 @@ describe('joinPlayers', () => {
         filename: 'test-player.php',
         lastSeason: { points: 240, games: 16 },
         projected: 260,
+        adp: null,
       },
     ])
     expect(result.unmatched).toEqual({ playerPoints: [], projections: [] })
@@ -115,5 +128,37 @@ describe('joinPlayers', () => {
     expect(result.unmatched.playerPoints).toEqual([
       { id: 42, name: 'Retired Player' },
     ])
+  })
+
+  it('reads adp from rank_adp_ppr on the master list, not rank_adp', () => {
+    const result = joinPlayers({
+      consensus: [consensusPlayer()],
+      playerPoints: [],
+      projections: [],
+      players: [masterListPlayer({ rank_adp: 10, rank_adp_ppr: 8 })],
+    })
+
+    expect(result.players[0].adp).toBe(8)
+  })
+
+  it('sets adp to null for a player absent from the master list', () => {
+    const result = joinPlayers({
+      consensus: [consensusPlayer()],
+      playerPoints: [],
+      projections: [],
+      players: [],
+    })
+
+    expect(result.players[0].adp).toBeNull()
+  })
+
+  it('defaults adp to null for everyone when the players feed is omitted', () => {
+    const result = joinPlayers({
+      consensus: [consensusPlayer()],
+      playerPoints: [],
+      projections: [],
+    })
+
+    expect(result.players[0].adp).toBeNull()
   })
 })

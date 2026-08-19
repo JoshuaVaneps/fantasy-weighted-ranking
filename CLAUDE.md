@@ -5,7 +5,9 @@ consensus (ECR), last season's production, and current-season projections. Weigh
 adjustable and the board re-sorts live. Manual pins override the math. Boards are saved
 per draft.
 
-Build plan, math, and the full ticket list live in `docs/build-plan.html`.
+Build plan, math, and the full ticket list live in `docs/buildplan.html` (revision 2 as
+of 2026-08-19). Milestone wrap-ups (what shipped, deviations, handoff to the next
+milestone) live in `docs/`, e.g. `docs/m1-wrapup.md`.
 
 ## How I want to work
 
@@ -56,12 +58,24 @@ default.
 ## Domain rules that are easy to get wrong
 
 - **ECR is inverted.** Lower rank is better, so negate it before blending.
+- **The games-played floor runs before z-scoring, not after.** A player below the floor
+  is excluded entirely from that position group's mean and standard deviation — not
+  zeroed and masked afterward. Including a null factor in the distribution shifts every
+  other player's z-score, silently. This ordering was a real correctness bug caught
+  before M2 started (build-plan revision 2) — verify normalization against a
+  hand-computed position group before trusting it.
 - **Z-scores are computed within position group**, never across positions. Blending
   raw across positions makes the board all quarterbacks.
 - **A missing factor is not zero.** Redistribute its weight proportionally across that
-  player's remaining factors and record the absence in `missingFactors`.
+  player's remaining factors and record the absence in `missingFactors`. This governs
+  the three scoring factors only — ADP has separate unranked semantics (see API rules)
+  and must never be conflated with this policy.
 - **Last season uses points per game**, not season totals, with a games-played floor
-  (default 4). Below the floor the factor counts as missing, not as a bad season.
+  (default 4). Below the floor the factor counts as missing, not as a bad season. Use
+  the feed's own `average` field for points-per-game — never derive it by dividing
+  `points` by `games`. The feed's value is authoritative; a manual division could
+  silently disagree with it. (The shipped M1 join dropped this field — carrying it
+  through as `lastSeason.pointsPerGame` is part of picking this ticket up.)
 - **Weights are integers summing to exactly 100.** Every change goes through
   `rebalance()`, which includes a rounding-remainder step. Never let the total drift
   to 99 or 101.
@@ -91,7 +105,13 @@ behind every rule below: `docs/api-notes.md`.
   it does nothing at all.
 - **Half-PPR is available** on both factors: `scoring=HALF` on player-points,
   `stats.points_half` on projections. Out of scope for now, but a legitimate third
-  option for DRAFT-41's toggle rather than a technical impossibility.
+  option for DRAFT-41's toggle rather than a technical impossibility. **ADP has no
+  half-PPR equivalent** — `/players` carries `rank_ecr_half` but no `rank_adp_half` —
+  so a half-PPR board would have no ADP source at all. A STD toggle has a smaller
+  version of the same problem: it needs `rank_adp`, not `rank_adp_ppr`, and
+  `fixtures/players.json` is filtered to PPR-ranked players only (DRAFT-48), so a
+  player ranked in STD but not PPR won't be in it — re-capture before assuming the
+  fixture can answer a question the current filter wasn't written for.
 - **All feeds join on the FantasyPros id.** It's `player_id` in consensus rankings,
   player-points, and injuries, and `fpid` in projections. Same number, two names.
 - **Consensus rankings is the spine.** It's the only feed with bye week and tier, and
@@ -101,6 +121,18 @@ behind every rule below: `docs/api-notes.md`.
   projections silently defaults to `RB`** — always send it explicitly.
 - **Injury status is display only.** It drives a badge and never touches the score —
   how to weigh an injury is the user's judgement, not the app's.
+- **ADP is display only too, and comes from a different endpoint than the other
+  factors.** There is no `/adp` endpoint — it 403s at both path shapes. ADP lives on
+  `/players`, the player master list (verified in DRAFT-48), joined on the same
+  FantasyPros id. Read `rank_adp_ppr`, not `rank_adp` (STD), per the PPR-everywhere
+  rule. That master list is an **all-time roster**: retired players are included and
+  carry `rank_adp_ppr: 0`, meaning unranked, not an ADP of zero. `getPlayers()`
+  (`src/api/players.js`) filters this out at the boundary — anything reaching
+  `joinPlayers` is already trustworthy, so don't re-add a zero-check downstream.
+  `team_id === 'FA'` is **not** a safe stand-in for "unranked" — some players briefly
+  carry it while still having a real ADP; `rank_adp_ppr > 0` alone is the correct
+  filter. ADP is a fourth *display* column, not a fourth blend input; `scoreAll()`
+  must never read `player.adp`.
 
 ### Guarding the boundary
 
@@ -152,15 +184,20 @@ own cache layer (DRAFT-30).
 
 ## Workflow
 
-- One ticket, one branch, one PR. Branch and commit messages use the **Jira key**, not
-  the plan ID from `docs/build-plan.html` — Jira's key is offset `+5` from the plan ID
-  in this project (plan DRAFT-12 is Jira DRAFT-17). Full lookup table:
-  `docs/jira-key-mapping.md`. Jira only auto-links a commit to a work item when the
-  literal existing key appears in the branch name or commit message — the plan ID alone
-  won't link.
-- Branch: `feat/DRAFT-17-weighted-blend` (Jira key + short slug describing the plan
-  ticket, e.g. "weighted-blend" for plan DRAFT-12).
-- Commit messages start with the Jira key: `DRAFT-17: add weighted blend`.
+- One ticket, one branch, one PR. Branch and commit messages use the **Jira key**.
+  **Plan IDs are retired as of `docs/buildplan.html` revision 2 (2026-08-19)** — every
+  ticket in that document is now identified by its real Jira key directly, no offset,
+  no translation. `docs/jirakeymapping.md` still exists but is historical-only, for
+  decoding older M1-era documents (`docs/api-notes.md`, the M1 wrap-up) that carry plan
+  IDs from before the retirement — nothing new should ever introduce one. Jira only
+  auto-links a commit to a work item when the literal key appears in the branch name or
+  commit message.
+- Branch: `feat/DRAFT-18-games-played-floor` (Jira key + short slug).
+- Commit messages start with the Jira key: `DRAFT-18: add games-played floor`.
+- **A deviation not in `docs/buildplan.html`** (an ad hoc request that comes up
+  mid-session, e.g. adding ADP in DRAFT-48) still needs a real Jira key before
+  branching. Ask for it — never invent one or skip the link, since that breaks Jira
+  auto-linking silently.
 - **No AI attribution anywhere.** No `Co-Authored-By: Claude`, no "Generated with Claude
   Code", no 🤖 markers, no "written by" credits — not in commit messages, commit
   trailers, PR titles, PR bodies, PR comments, or code comments. This is my capstone and

@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { createServer } from 'vite'
 import { getConsensus } from '../src/api/consensus.js'
 import { getInjuries } from '../src/api/injuries.js'
+import { getPlayers } from '../src/api/players.js'
 import { getPriorSeason } from '../src/api/priorSeason.js'
 import { getProjections } from '../src/api/projections.js'
 
@@ -38,6 +39,7 @@ async function main() {
         ['projections', getProjections(CURRENT_SEASON)],
         ['player-points', getPriorSeason(PRIOR_SEASON)],
         ['injuries', getInjuries()],
+        ['players', getPlayers()],
       ].map(async ([name, promise]) => [name, await promise]),
     ),
   )

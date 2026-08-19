@@ -10,6 +10,7 @@
  * @property {string} filename
  * @property {{points: number, games: number} | null} lastSeason
  * @property {number | null} projected
+ * @property {number | null} adp
  */
 
 /**
@@ -36,22 +37,28 @@
  * @param {object[]} feeds.consensus - raw `players` array from getConsensus()
  * @param {object[]} feeds.playerPoints - raw `players` array from getPriorSeason()
  * @param {object[]} feeds.projections - raw `players` array from getProjections()
+ * @param {object[]} [feeds.players] - `players` array from getPlayers(), the
+ *   only source of ADP. getPlayers() already filters to players with a real
+ *   ADP, so anything present here is trusted as-is. Optional: omit it and
+ *   every player's `adp` comes back null.
  * @returns {JoinResult}
  */
-export function joinPlayers({ consensus, playerPoints, projections }) {
+export function joinPlayers({ consensus, playerPoints, projections, players = [] }) {
   const playerPointsById = new Map(
     playerPoints.map((player) => [player.player_id, player]),
   )
   const projectionsById = new Map(
     projections.map((player) => [player.fpid, player]),
   )
+  const adpById = new Map(players.map((player) => [player.player_id, player]))
 
   const matchedPlayerPointsIds = new Set()
   const matchedProjectionsIds = new Set()
 
-  const players = consensus.map((entry) => {
+  const joinedPlayers = consensus.map((entry) => {
     const lastSeason = playerPointsById.get(entry.player_id)
     const projected = projectionsById.get(entry.player_id)
+    const adpEntry = adpById.get(entry.player_id)
 
     if (lastSeason) matchedPlayerPointsIds.add(entry.player_id)
     if (projected) matchedProjectionsIds.add(entry.player_id)
@@ -69,6 +76,7 @@ export function joinPlayers({ consensus, playerPoints, projections }) {
         ? { points: lastSeason.points, games: lastSeason.games }
         : null,
       projected: projected ? projected.stats.points_ppr : null,
+      adp: adpEntry ? adpEntry.rank_adp_ppr : null,
     }
   })
 
@@ -81,5 +89,5 @@ export function joinPlayers({ consensus, playerPoints, projections }) {
       .map((player) => ({ id: player.fpid, name: player.name })),
   }
 
-  return { players, unmatched }
+  return { players: joinedPlayers, unmatched }
 }

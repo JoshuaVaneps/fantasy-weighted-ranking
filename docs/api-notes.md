@@ -46,7 +46,7 @@ lives at the root**, and testing it under `/{season}/` returns a misleading 403:
 
 **When an endpoint 403s, try the other path shape before concluding it doesn't exist.**
 
-### `/players` master list (fallback / future ADP source)
+### `/players` master list (ADP source — now in use as of DRAFT-48)
 
 8524 players, `tier: premium`, no cap. Carries ranks the other feeds don't:
 

@@ -1,3 +1,18 @@
+# Jira key mapping — historical lookup only
+
+**Plan IDs are retired as of build-plan revision 2 (2026-08-19).**
+
+This table exists to decode M1-era documents — the M1 wrap-up and others that carried
+both a plan ID and a Jira key. `docs/buildplan.html` now uses Jira keys exclusively, and
+nothing new should introduce a plan ID.
+
+**Why it was retired:** M2 spans plan DRAFT-12 to 20 and Jira DRAFT-17 to 25. Those ranges
+overlap, so eight distinct tickets were competing for four names inside a single milestone —
+and "DRAFT-17" meant z-score normalization as a Jira key and weight rebalance as a plan ID,
+which were the two tickets most likely to be picked up next.
+
+**Formula:** `Jira key = plan ID + 5`. It applies to nothing numbered above DRAFT-41.
+
 | Plan ID | Jira Key | Title |
 |---|---|---|
 | DRAFT-1 | **DRAFT-6** | Spike: verify tier endpoints, parameters, and CORS |
@@ -36,3 +51,25 @@
 | DRAFT-34 | **DRAFT-39** | Injury status badge on the board |
 | DRAFT-35 | **DRAFT-40** | README, architecture note, and capstone write-up |
 | DRAFT-36 | **DRAFT-41** | Scoring format toggle (STD and PPR) |
+
+## Off-plan tickets
+
+These have no plan ID and never did. The formula does not apply to them.
+
+| Jira Key | Title | Status |
+|---|---|---|
+| **DRAFT-47** | Add minimal setup README | Merged (PR #3) |
+| **DRAFT-48** | Extend API to pull ADP | PR #13 open |
+| **DRAFT-49** | Production proxy and first deploy | Not started — added in revision 2 |
+
+## Reading M1-era documents
+
+These carry plan IDs and need this table:
+
+- `docs/api-notes.md` — mixed; §5 and §10 reference Jira keys, the header references both
+- the project handoff — uses "plan DRAFT-n" prefixed throughout
+- the M1 wrap-up — Jira keys with plan IDs in parentheses
+
+When one of these says a bare "DRAFT-n" without saying which scheme, check whether the
+title matches the plan-ID row or the Jira-key row above. The titles disambiguate; the
+numbers do not.

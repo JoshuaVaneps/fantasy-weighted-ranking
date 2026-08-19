@@ -11,6 +11,7 @@ const COLUMNS = [
   { label: 'Pos', value: (player) => player.position },
   { label: 'Bye', value: (player) => player.byeWeek },
   { label: 'Consensus', value: (player) => player.rankEcr },
+  { label: 'ADP', value: (player) => roundForDisplay(player.adp) },
   {
     label: 'Last Season',
     value: (player) => roundForDisplay(player.lastSeason?.points),
