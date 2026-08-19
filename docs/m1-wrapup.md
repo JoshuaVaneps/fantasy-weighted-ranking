@@ -1,10 +1,10 @@
 # M1 Wrap-Up — Walking Skeleton
 
 **Status:** Complete · **Date:** 2026-08-19
-**Milestone goal** (from `docs/build-plan.html`): *"Real players from four joined feeds, on screen, in consensus order."*
+**Milestone goal** (from `docs/buildplan.html`): *"Real players from four joined feeds, on screen, in consensus order."*
 **Scope:** plan DRAFT-1–DRAFT-11 / Jira DRAFT-6–DRAFT-16, 27 pts — plus one off-plan deviation, Jira DRAFT-48.
 
-All identifiers below are **Jira keys** (the ones in branch names and commits), with the plan ID from `docs/build-plan.html` noted alongside. See `docs/jira-key-mapping.md` for the full lookup.
+All identifiers below are **Jira keys** (the ones in branch names and commits), with the plan ID noted alongside. This document predates `docs/buildplan.html` revision 2, which **retired plan IDs entirely** — everything from here down is now itself an "M1-era document" per that revision's own terms. See `docs/jirakeymapping.md` for the historical lookup. **§4 below is superseded — see the correction at the top of that section before acting on it.**
 
 ---
 
@@ -29,7 +29,7 @@ All identifiers below are **Jira keys** (the ones in branch names and commits), 
 
 ### Deviation: DRAFT-48 — Extend API to pull ADP
 
-Not in `docs/build-plan.html` or the original Jira import — a mid-session ask, given its own real Jira key (DRAFT-48, "Extend API to Pull ADP") rather than invented. PR #13, **open, not yet merged**.
+Not in `docs/buildplan.html` (as it stood at the time) or the original Jira import — a mid-session ask, given its own real Jira key (DRAFT-48, "Extend API to Pull ADP") rather than invented. PR #13, **open, not yet merged**.
 
 - New endpoint module `getPlayers()` hits `/players` (the master list) — the only feed that carries ADP. There is no dedicated `/adp` endpoint; it 403s at both path shapes.
 - Reads `rank_adp_ppr` (PPR, per the project's PPR-everywhere rule), not `rank_adp` (STD).
@@ -75,29 +75,52 @@ These came up testing DRAFT-16/DRAFT-48 against the *live* API in a browser — 
 
 ---
 
-## 4. What's needed for M2 — The Core Feature (30 pts, Jira DRAFT-17–DRAFT-25)
+## 4. What's needed for M2 — The Core Feature (SUPERSEDED — see below before acting)
+
+> **Correction (2026-08-19, same day, after `docs/buildplan.html` revision 2):** the table
+> and recommendation originally here were wrong on two counts, both caught before any M2
+> code was written:
+> 1. **DRAFT-18 (games-played floor) must run before DRAFT-17 (z-score normalization),
+>    not after.** A player below the floor has to be excluded from the position group's
+>    mean/stdev entirely — scoring them and masking the result afterward contaminates
+>    every other player's z-score in that group, silently. This doc's original "start
+>    with DRAFT-17" call was exactly the wrong order.
+> 2. **DRAFT-23 (mix bar) also depends on DRAFT-21** (state shape/selector), not just
+>    DRAFT-22 and DRAFT-14 as listed below.
+>
+> M2 is now 31 pts, not 30 — DRAFT-18 picked up one extra point for also carrying the
+> feed's `average` field through `joinPlayers` as `lastSeason.pointsPerGame` (the shipped
+> M1 join dropped it; use the feed's value, never derive it by dividing `points` by
+> `games`). Plan IDs are also retired as of the same revision — don't use the `(plan)`
+> column below for anything new.
+>
+> **Don't use the table below to decide what to build next.** `docs/buildplan.html`'s
+> M2 section is the authoritative, corrected version — read that instead. It's kept
+> here only so the "two bugs found by real-data testing" narrative in §3 still has its
+> original context.
 
 M2's goal per the plan: *"Drag the mix, the board re-sorts live — the actual idea, working."* This is the scoring math and the weight-control UI. None of it is started.
 
 | Jira (plan) | Pts | Title | Depends on (plan ID) | Ready to start? |
 |---|---|---|---|---|
-| DRAFT-17 (12) | 5 | Z-score normalization within position | plan 8 = **DRAFT-13, done** | **Yes** |
-| DRAFT-18 (13) | 1 | Games-played floor on last season | DRAFT-17 (above) | After DRAFT-17 |
+| DRAFT-17 (12) | 5 | Z-score normalization within position | plan 8 = **DRAFT-13, done** | ~~Yes~~ **No — see correction above** |
+| DRAFT-18 (13) | 1 | Games-played floor on last season | DRAFT-17 (above) | ~~After DRAFT-17~~ **Yes — corrected order** |
 | DRAFT-19 (14) | 3 | Missing-factor weight redistribution | DRAFT-18 (above) | After DRAFT-18 |
 | DRAFT-20 (15) | 3 | Weighted blend and ranking (`scoreAll`) | DRAFT-19 (above) | After DRAFT-19 |
 | DRAFT-21 (16) | 3 | App state shape and memoized selector | plan 10 = **DRAFT-15, done**; plan 15 = DRAFT-20 (above) | After DRAFT-20 |
 | DRAFT-22 (17) | 3 | Weight rebalance function | plan 10 = **DRAFT-15, done** | **Yes** |
-| DRAFT-23 (18) | 5 | Draggable three-segment mix bar | DRAFT-22 (above); plan 9 = **DRAFT-14, done** | After DRAFT-22 |
+| DRAFT-23 (18) | 5 | Draggable three-segment mix bar | DRAFT-22, DRAFT-21 (above); plan 9 = **DRAFT-14, done** | After DRAFT-22 and DRAFT-21 |
 | DRAFT-24 (19) | 2 | Numeric weight inputs synced to the bar | DRAFT-23 (above) | After DRAFT-23 |
 | DRAFT-25 (20) | 5 | Keyed DOM reordering instead of full re-render | plan 11 = **DRAFT-16, done**; plan 16 = DRAFT-21 (above) | After DRAFT-21 |
 
-**Two tickets are unblocked right now** and don't depend on each other, so they could go in either order or even in parallel: **DRAFT-17** (z-score normalization — the natural first step, since everything else in the scoring chain builds on it) and **DRAFT-22** (weight rebalance — pure function, only needs the state store shape which already exists).
+**Two tickets are unblocked right now** and don't depend on each other: **DRAFT-18** (games-played floor — now the head of the scoring chain, do this first) and **DRAFT-22** (weight rebalance — pure function, only needs the state store shape which already exists, can slot in any time before DRAFT-23).
 
 **Things M2 needs to get right, per CLAUDE.md's domain rules, that aren't yet exercised by any shipped code:**
 - ECR must be **negated** before blending (lower rank = better; the blend needs higher = better).
+- **The floor runs before normalization.** A null factor is excluded from its position group's mean/stdev entirely — not zeroed, not treated as a low value.
 - Z-scores computed **within position group only** — never across positions.
 - A missing factor gets its weight **redistributed proportionally** across that player's remaining factors, and the absence recorded in `missingFactors` — this is a different rule from the ADP-zero handling in DRAFT-48; do not conflate them, they're separate feeds with separate "missing" semantics.
-- Last season uses **points per game**, with a games-played floor (default 4) — DRAFT-18 (Jira). The `lastSeason.points` field currently on `Player` is a season **total**, not yet divided by games; that division belongs to DRAFT-18, not before.
+- Last season uses **points per game**, with a games-played floor (default 4) — DRAFT-18. Use the feed's own `average` field, carried through as `lastSeason.pointsPerGame`; never derive it by dividing `points` by `games`.
 - Weights are **integers summing to exactly 100**, always through `rebalance()`.
 - **`player.adp` is not a scoring input** — see §1's deviation note. `scoreAll()` should only ever read `rankEcr`, `lastSeason`, and `projected`.
 
@@ -107,5 +130,6 @@ M2's goal per the plan: *"Drag the mix, the board re-sorts live — the actual i
 
 - `main` has everything through DRAFT-16 (PR #12) merged.
 - **PR #13 (DRAFT-48, ADP) is open, not yet merged.** Merge it before branching M2 work, same handoff pattern used throughout M1 (check `gh pr view <n> --json state,mergedAt`, pull main, then branch).
-- No blockers. Recommended next step: branch `feat/DRAFT-17-<slug>` off updated `main` and start Z-score normalization — it's pure, fully within `src/scoring/**` (not yet created), and unblocks the rest of the scoring chain.
-- `src/scoring/` currently holds only `environment.test.js` (a node-environment smoke test confirming `document` is undefined there, i.e. no DOM) — DRAFT-17 will be the first real content there.
+- `docs/buildplan.html` revision 2 landed the same day, after PR #13 was opened — retired plan IDs, corrected the M2 dependency order, and added DRAFT-49 (production deploy). See the correction banner at the top of §4.
+- No blockers. **Recommended next step: branch `feat/DRAFT-18-<slug>` off updated `main`** and start the games-played floor — not DRAFT-17, per the corrected ordering in §4. It also needs a small amendment to the already-shipped `src/data/joinPlayers.js` to carry `lastSeason.pointsPerGame` through from the feed's `average` field.
+- `src/scoring/` currently holds only `environment.test.js` (a node-environment smoke test confirming `document` is undefined there, i.e. no DOM) — DRAFT-18 will be the first real content there.

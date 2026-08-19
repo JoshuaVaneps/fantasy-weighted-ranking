@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capstone 1 — Custom Weighted Draft Board · Build Plan</title>
+<style>
+  :root{
+    --ink:#1a1d29; --muted:#5b6072; --faint:#8a8f9f;
+    --line:#e5e7ef; --bg:#ffffff; --panel:#f7f8fb;
+    --accent:#3d3ad6; --accent-soft:#ecebfb;
+    --f1:#3d3ad6; --f2:#c2710c; --f3:#b5327f;
+    --good:#1f8f5f; --good-soft:#e7f5ee;
+    --warn:#b4690e; --warn-soft:#fbf1e2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:48px 24px;
+  }
+  main{max-width:1040px; margin:0 auto}
+  header.doc{border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:6px}
+  .eyebrow{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 6px}
+  h1{font-size:30px; line-height:1.2; margin:0 0 10px; letter-spacing:-.01em}
+  .lede{color:var(--muted); margin:0; max-width:70ch}
+  h2{font-size:22px; margin:42px 0 4px; letter-spacing:-.01em; padding-bottom:6px; border-bottom:1px solid var(--line)}
+  h3{font-size:16px; margin:22px 0 4px}
+  h4{font-size:12px; margin:18px 0 4px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint)}
+  p{margin:10px 0}
+  code{background:var(--panel); padding:1px 5px; border-radius:4px; font-size:13px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:13px; line-height:1.55; font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre code{background:none; padding:0; font-size:13px}
+  .box{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 22px; margin:18px 0}
+  .note{background:var(--warn-soft); border:1px solid #ecd9b6; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:14.5px}
+  .note strong{color:var(--warn)}
+  .win{background:var(--good-soft); border:1px solid #cfe9db; border-radius:10px; padding:12px 16px; margin:14px 0; font-size:14.5px}
+  .win strong{color:var(--good)}
+  .dec{border-left:3px solid var(--accent); background:var(--accent-soft); padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:14.5px}
+  .dec b{color:var(--accent)}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:13.5px}
+  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--faint); background:var(--panel)}
+  .tid{font-family:ui-monospace,Menlo,monospace; font-weight:700; white-space:nowrap; font-size:12.5px; color:var(--accent)}
+  .pts{text-align:center; white-space:nowrap}
+  .dep{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:var(--muted); width:98px; min-width:98px}
+  .ms{background:var(--ink); color:#fff; padding:10px 14px; border-radius:8px; margin:32px 0 0; display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px}
+  .ms h3{margin:0; color:#fff; font-size:16px}
+  .ms span{font-size:12.5px; opacity:.75}
+  .ac{color:var(--muted); display:block; margin-top:4px; font-size:12.5px}
+  .ac b{color:var(--good); font-weight:600}
+  .st{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:1px 6px; border-radius:4px; margin-top:4px}
+  .st-done{background:var(--good-soft); color:var(--good); border:1px solid #cfe9db}
+  .st-open{background:var(--warn-soft); color:var(--warn); border:1px solid #ecd9b6}
+  .rev{color:var(--warn); font-weight:600}
+  tr.done td{background:#fbfdfc}
+  ul{margin:8px 0; padding-left:20px} li{margin:5px 0}
+  footer{margin-top:44px; padding-top:16px; border-top:1px solid var(--line); color:var(--faint); font-size:12.5px}
+  @media print{
+    body{padding:0; font-size:10pt; color:#000}
+    table{font-size:8.5pt} th,td{padding:5px 6px}
+    .box,.dec,.note,.win{break-inside:avoid}
+    tr{break-inside:avoid}
+    .ms{background:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact}
+    .tid{color:#000}
+    h2{margin-top:20px}
+  }
+</style>
+</head>
+<body>
+<main>
+
+<header class="doc">
+  <p class="eyebrow">Capstone 1 &middot; Build Plan &amp; Ticket Breakdown &middot; Revision 2</p>
+  <h1>Custom Weighted Draft Board</h1>
+  <p class="lede">A vanilla JavaScript draft board that ranks players on your own blend of expert consensus, last season's production, and projections — with live re-sorting, manual overrides, and saved board versions. 39 tickets across 4 milestones — 36 scheduled, 2 off-plan, 1 backlog — ordered so you can take them one at a time and always have something that runs.</p>
+</header>
+
+<div class="note"><strong>What changed in revision 2.</strong> Five corrections, all made after M1 shipped. <b>Plan IDs are gone</b> — every identifier here is now the Jira key, because the two numbering schemes had begun to collide inside a single milestone. The <b>games-played floor now runs before z-scoring</b> rather than after, which was a live correctness bug in the ordering. <b>DRAFT-18 recovers the feed's <code>average</code> field</b>, which the shipped join dropped. <b>DRAFT-23 gained a dependency on DRAFT-21</b> that was always real but never written down. <b>DRAFT-49 is new</b> — nothing previously stood up the production proxy. Every changed line is marked <span class="rev">in this color</span>.</div>
+
+<h2>Success criteria</h2>
+<p>Done means all five of these are true, not "the tickets are closed." Written first so the finish line is fixed before the work starts.</p>
+<ul>
+  <li>Moving a weight re-sorts the board in under 100ms with no visible flicker, no lost scroll position, and no lost input focus.</li>
+  <li>A player missing one factor still ranks sensibly, and the row shows which factor was unavailable.</li>
+  <li>Pinned players hold their slots across weight changes, board switches, and page reloads.</li>
+  <li>Saved boards restore exactly, and the app never persists a computed ranking — only the inputs that produce one.</li>
+  <li>The whole app is usable by keyboard alone, and the test suite runs green with zero network access.</li>
+</ul>
+
+<h2>Where the project stands</h2>
+<p><b>M1 is complete.</b> All 27 points shipped across pull requests #1 to #12, plus two off-plan tickets that took real Jira keys rather than invented ones. The app fetches live feeds through the dev proxy, joins them on the FantasyPros id, and renders a real board in consensus order. M2 — the scoring math and the weight control — has not started.</p>
+
+<table>
+  <thead><tr><th>Milestone</th><th>Status</th><th>What exists</th></tr></thead>
+  <tbody>
+    <tr class="done"><td><b>M1 · Walking Skeleton</b></td><td><span class="st st-done">complete</span></td><td>27 of 27 pts, DRAFT-6 to DRAFT-16 merged</td></tr>
+    <tr><td><b>Off-plan</b></td><td><span class="st st-done">merged</span> <span class="st st-open">PR open</span></td><td>DRAFT-47 setup README merged; DRAFT-48 ADP column open as PR #13</td></tr>
+    <tr><td><b>M2 · The Core Feature</b></td><td><span class="st st-open">next</span></td><td>Nothing started. <code>src/scoring/</code> holds only an environment smoke test.</td></tr>
+    <tr><td><b>M3 and M4</b></td><td>—</td><td>Not started</td></tr>
+  </tbody>
+</table>
+
+<h2>Decisions locked before the first commit</h2>
+<p>These are the choices that would otherwise get made accidentally at 11pm in the middle of a ticket. Each one has a reason, and each one is reversible if the reason turns out wrong.</p>
+
+<div class="dec"><b>Vite's vanilla template, not a bare HTML file.</b> Vite's <code>vanilla</code> template is not a framework — it gives you an ES module dev server, hot reload, and a build step while you still write plain DOM code. The rubric's "no framework" constraint is about React and Vue, not about tooling. It also gives you Vitest for free, which is how the rubric's "tested" requirement gets met.</div>
+
+<div class="dec"><b>Plain CSS with custom properties, no Tailwind.</b> Capstone 2 is where the token pipeline and the utility-class workflow belong. Here, hand-writing CSS custom properties for the three factor colors keeps the focus on JavaScript and makes the fixed-color rule physically enforced in one place.</div>
+
+<div class="dec"><b>Fixtures are committed, and tests never touch the network.</b> A capture script hits the live API once and writes JSON to <code>/fixtures</code>. Every test runs against those. This means you can build on a plane, your tests are deterministic, and a FantasyPros outage never blocks you. It also mirrors what MSW does for you in capstone 3.</div>
+
+<div class="dec"><b>Scoring is a pure module with zero DOM and zero fetch.</b> Everything in <code>src/scoring</code> takes data in and returns data out. That is what makes the hardest logic in the project unit-testable without a browser, and it is the same boundary discipline the portal's adapter layer needs.</div>
+
+<div class="dec"><b>Z-scores within position, not blended ranks.</b> Blending ranks throws away magnitude — the gap between the first and second receiver might be huge or trivial, and rank blending treats those identically. Z-scores keep the distances real. Within position, because a quarterback's point total and a running back's are not comparable quantities.</div>
+
+<div class="dec"><b>Store the inputs, derive the output — always.</b> Saved boards persist weights, pins, and settings. The ranking is recomputed on load. The moment you cache a computed list you own a staleness bug, and this is the single habit that transfers most directly to the portal.</div>
+
+<div class="dec"><b>PPR only in v1 — a scope choice, not a limitation.</b> The spike disproved the original reason for this. Half-PPR <em>is</em> fully supported: <code>player-points</code> honours <code>scoring=HALF</code> and returns genuinely different values, and projections ships <code>points</code>, <code>points_ppr</code>, and <code>points_half</code> together. All three factors can align on any format. v1 stays PPR-only to keep the surface small, and adding formats later is exact rather than approximated.</div>
+
+<div class="dec"><b>Deployment requires a server-side proxy, and the host is Vercel.</b> Settled by the spike, not a maybe. The <code>OPTIONS</code> preflight returns 403 with zero CORS headers, and <code>x-api-key</code> is not a safelisted header, so every browser request must preflight and no browser call can succeed from any origin. A static-only deploy is impossible. There is a second, independent reason: a browser-side key is a public key, and this is now a paid credential. <span class="rev">The production proxy is a Vercel serverless function alongside the static build — the same "attach the key, forward the request" logic the dev proxy already runs, in a different place. Standing it up is <b>DRAFT-49</b>.</span></div>
+
+<div class="dec"><b>The app assumes a paid API tier.</b> The free tier caps every feed at 10 players, unpageable, and returns <code>200</code> with no error — so a lapsed subscription silently renders a ten-player board rather than failing. The project runs on HOF premium. DRAFT-10 asserts a sane minimum row count so this fails loudly if it ever changes.</div>
+
+<div class="dec"><span class="rev"><b>ADP is display-only, and is not a fourth scoring factor.</b> DRAFT-48 added an ADP column sourced from the <code>/players</code> master list, for eyeball comparison against the computed board. The scoring model remains three factors. <code>scoreAll()</code> reads <code>rankEcr</code>, <code>lastSeason</code>, and <code>projected</code>, and never touches <code>player.adp</code>. Its "missing" semantics are separate too: an ADP of <code>0</code> on the master list means unranked, which is a different rule from the redistribution policy and must not be conflated with it.</span></div>
+
+<h2>Ticket numbering — one scheme only</h2>
+
+<div class="note"><strong>Plan IDs are retired as of revision 2.</strong> This document originally carried two identifiers per ticket: a sequential plan ID and the real Jira key, offset by five. That was survivable while the ranges did not overlap. They now do — M2 spans plan DRAFT-12 to 20 and Jira DRAFT-17 to 25, so <b>eight distinct tickets were competing for four names inside a single milestone</b>, and the two most likely next tickets both answered to "DRAFT-17." Every identifier here is now the Jira key, which is also what branch names, commit messages, and the board use. <code>docs/jira-key-mapping.md</code> stays as a lookup for reading M1's older handoffs; nothing new should use a plan ID.</div>
+
+<p>The mapping, for reference: <code>Jira key = plan ID + 5</code>. Plan DRAFT-1 was Jira DRAFT-6; plan DRAFT-36 was Jira DRAFT-41. <span class="rev">Off-plan tickets sit outside that formula entirely — DRAFT-47, DRAFT-48, and DRAFT-49 have no plan ID and never did, so the formula applies to nothing numbered above DRAFT-41.</span></p>
+
+<h2>API contract (verified)</h2>
+<p>Everything below was exercised against the live API in the DRAFT-6 spike, roughly 100 calls including deliberate negative tests. Full evidence lives in <code>docs/api-notes.md</code>. Base path is <code>/public/v2/json/nfl/</code> and auth is the <code>x-api-key</code> header, never a query parameter.</p>
+
+<div class="win"><strong>The join is solved, and verified.</strong> <code>player_id</code> (consensus, player-points, injuries) and <code>fpid</code> (projections) are the same integer — cross-checked on eight players, including Josh Allen at 17298 in both. No fuzzy name matching is needed. This proves the <em>key</em> is clean, not that <em>coverage</em> is complete, so DRAFT-13's unmatched report is still worth building.</div>
+
+<table>
+  <thead><tr><th>Factor</th><th>Call</th><th>Fields used</th></tr></thead>
+  <tbody>
+    <tr><td><b>Consensus (ECR)</b></td>
+      <td><code>/2026/consensus-rankings?position=ALL&amp;scoring=PPR&amp;week=0</code></td>
+      <td><code>player_id</code>, <code>player_name</code>, <code>player_team_id</code>, <code>player_position_id</code>, <code>player_bye_week</code>, <code>rank_ecr</code>, <code>pos_rank</code>, <code>tier</code>, <code>rank_std</code></td></tr>
+    <tr><td><b>Projections</b></td>
+      <td><code>/2026/projections?positions=QB:RB:WR:TE:K:DST&amp;week=0</code><br><span style="color:var(--warn)">sends <code>scoring</code> for consistency, but it is <b>ignored</b> here</span></td>
+      <td><code>fpid</code>, <code>stats.points_ppr</code> — read the field, never trust the param</td></tr>
+    <tr><td><b>Last season</b></td>
+      <td><code>/2025/player-points?position=ALL&amp;scoring=PPR</code><br><span style="color:var(--faint)"><code>position</code> is redundant (defaults to ALL) but harmless</span></td>
+      <td><code>player_id</code>, <code>games</code>, <code>points</code>, <span class="rev"><code>average</code> — points per game, supplied by the feed. Carry it; do not derive it.</span></td></tr>
+    <tr><td><b>Injury status</b></td>
+      <td><code>/injuries</code> — no season segment</td>
+      <td><code>player_id</code>, <code>status_short</code> — for the board badge (DRAFT-39)</td></tr>
+    <tr><td><span class="rev"><b>ADP</b> — display only</span></td>
+      <td><span class="rev"><code>/players</code> — no season segment. There is no <code>/adp</code> endpoint; it 403s under both path shapes.</span></td>
+      <td><span class="rev"><code>player_id</code>, <code>rank_adp_ppr</code> — a <code>0</code> means unranked, not an ADP of zero. <b><code>team_id: "FA"</code> is not a proxy for unranked</b>: 101 players carry a real ADP with no team, so rank is the only safe predicate.</span></td></tr>
+  </tbody>
+</table>
+
+<div class="note"><strong>Two path shapes, not one.</strong> Season-scoped data lives at <code>/{season}/{endpoint}</code> — consensus-rankings, projections, player-points. Everything else lives at the root with no season segment — <code>/injuries</code>, <code>/players</code>, <code>/news</code>. Calling one under the wrong shape returns a <code>403</code> that reads like a permissions failure, which cost the spike a wrong conclusion mid-flight. <code>/adp</code>, <code>/depth-charts</code>, and <code>/teams</code> are absent under both shapes.</div>
+
+<h3>Guarding the boundary</h3>
+<p>The spike's most valuable output. These are failure modes the API exhibits in normal operation, and each one silently produces wrong data rather than an error, which is why the client has to defend against them explicitly.</p>
+<ul>
+  <li><b>200 does not mean success.</b> Omitting <code>positions</code> silently defaults to <code>RB</code>; an out-of-range season silently returns the current one. The client must echo-check <code>year</code>, <code>scoring</code>, and <code>positions</code> in the response against what was requested.</li>
+  <li><b><code>count</code> is not the array length.</b> It reflects the requested filter, not the payload. Always use <code>players.length</code>.</li>
+  <li><b>Rate limiting exists and is undocumented.</b> A 20-request burst returned 7 successes then 11 <code>429</code>s before recovering. No <code>Retry-After</code> and no <code>X-RateLimit-*</code> headers on any response, including the 429 itself — so backoff has to be client-chosen, with nothing to read from the server.</li>
+  <li><b><code>403</code> has two meanings.</b> <code>{"message":"Forbidden"}</code> is auth. <code>{"message":"Missing Authentication Token"}</code> is the gateway's version of a 404, meaning a wrong path. Never report a bad path as an auth failure.</li>
+  <li><b>Auth failure is 403, never 401.</b> A bad key and a missing key are indistinguishable — identical body, no detail.</li>
+  <li><b>The upstream CDN cache ignores the API key.</b> <code>cache-control: max-age=1200</code> via CloudFront, with the key excluded from the cache key. A premium key was observed being served cached free-tier responses for minutes. Your client cache sits on top of an existing one.</li>
+  <li><span class="rev"><b>Floating-point noise reaches the display layer.</b> Points arrive like <code>195.29999999999998</code>. M1 added <code>roundForDisplay()</code> in <code>board.js</code>, display-side only — stored values keep full precision, so M2's scoring math makes its own independent rounding decisions.</span></li>
+</ul>
+
+<p><b>Consensus rankings is the spine</b>, confirmed. It is the only feed carrying <code>player_bye_week</code> and <code>tier</code>, and its team values are current-season, so a player who changed teams shows correctly. Build the player list from it and enrich from the others. The <code>/players</code> master list carries <code>rank_ecr</code>, <code>rank_adp</code>, <code>rank_ecr_ppr</code>, <code>rank_adp_ppr</code>, and <code>rank_ecr_half</code>, but it lacks bye week and tier, so it enriches rather than replaces.</p>
+
+<p><b>One caution on <code>filename</code>.</b> It is a bare <code>jahmyr-gibbs.php</code> in most feeds but a full URL in <code>/players</code>. Same field name, different shape, so normalize before ever using it as a fallback key.</p>
+
+<h2>Module map</h2>
+<p>Boundaries drawn so that each layer can be tested without the one above it. Nothing in <code>data</code> or <code>scoring</code> knows the DOM exists; nothing in <code>ui</code> does math. <span class="rev">The shape below is what M1 actually built, which diverged from the original sketch — <code>api/</code> became one module per endpoint plus a shared <code>request.js</code>, rather than a single <code>endpoints.js</code>.</span></p>
+
+<pre><code>src/
+  api/                   AS BUILT
+    request.js           fetch wrapper — timeout, 429 backoff, echo-validation, error classes
+    constants.js         BASE, SCORING, WEEK, position list
+    consensus.js  projections.js  priorSeason.js  injuries.js  players.js
+  data/                  AS BUILT
+    joinPlayers.js       raw payloads  ->  Player[]  (keyed on the FantasyPros id)
+    sortByConsensus.js
+  state/                 AS BUILT
+    store.js             hand-rolled: getState, setState, subscribe
+  ui/                    AS BUILT
+    board.js             row rendering, roundForDisplay
+  main.js                composition root: fetch -> join -> sort -> store -> render
+
+  scoring/               TO COME — M2 and M3
+    floor.js             games-played floor; nulls a short season before normalizing
+    normalize.js         raw factor values  ->  z-scores within position
+    weights.js           rebalance() — keeps the mix summing to 100
+    blend.js             z-scores + weights  ->  score, with missing-factor policy
+    replacement.js       value-over-replacement baselines per position
+    rank.js              scoreAll() — the one function the UI calls
+  state/                 TO COME
+    selectors.js         memoized getRankedPlayers(state)
+    persistence.js       localStorage boards, schema-versioned
+  ui/                    TO COME
+    mixControl.js        the draggable three-segment bar
+    contributionBar.js   the per-row explanation bar
+    dragReorder.js       pointer-event drag, emits pin intents
+
+fixtures/                committed API snapshots (5 files)
+scripts/capture.js       one-shot fixture refresh</code></pre>
+
+<h3>The Player shape, as shipped</h3>
+<pre><code>{ id, name, team, position, byeWeek, tier, rankEcr, filename,
+  lastSeason: { points, games, <span class="rev">pointsPerGame</span> } | null,
+  projected: number | null,
+  adp:       number | null }</code></pre>
+<p><span class="rev"><code>pointsPerGame</code> is the correction carried by DRAFT-18 — the shipped join kept only the season total, while the plan assumed the feed's own <code>average</code> had come through with it.</span></p>
+
+<h2>The math, settled up front</h2>
+
+<h3>Normalizing the three factors</h3>
+<p>Expert consensus is an ordinal rank where 1 is best. The other two are scalars where bigger is better. Invert consensus first, then z-score all three inside each position group so the numbers become comparable.</p>
+<pre><code>// within each position group:
+zEcr        = -1 * ((ecr        - mean(ecr))        / stdev(ecr))
+zLastSeason =       (ppg        - mean(ppg))        / stdev(ppg)
+zProjected  =       (projPoints - mean(projPoints)) / stdev(projPoints)
+
+// guard: stdev === 0 (a one-player position group) -> z = 0, never NaN
+
+<span class="rev">// guard: a null factor is excluded from that group's mean and stdev entirely.
+//        It is not zero and it is not a low value — it is absent from the
+//        distribution. Including it shifts every other player's z-score.</span></code></pre>
+
+<div class="note"><span class="rev"><strong>The floor runs before normalization, not after.</strong> A player under the games threshold has no usable last-season value, so he must be absent from the mean and standard deviation of his position group's points-per-game distribution — not scored against it and masked afterward. Revision 1 ordered these the other way round, which would have produced contaminated baselines that look entirely reasonable. <b>DRAFT-18 now precedes DRAFT-17.</b></span></div>
+
+<h3>Blending, and what happens when a factor is missing</h3>
+<p>Weights arrive as integers summing to 100. If a player is missing a factor, that factor's weight is redistributed across the ones they do have, in proportion to those weights — so a rookie is judged on consensus and projections rather than being silently penalized to zero.</p>
+<pre><code>available = factors present for this player
+if available is empty -> exclude the player, record the reason
+
+totalAvailableWeight = sum(weights[f] for f in available)
+score = sum( z[f] * (weights[f] / totalAvailableWeight) for f in available )
+
+player.missingFactors = the factors that were absent   // drives the row badge</code></pre>
+<p>Last season uses points per game, not season totals, with a games-played floor (default 4). Below the floor the factor counts as missing rather than as a bad season — otherwise an injured star reads as a bust.</p>
+
+<h3>Keeping the mix at exactly 100</h3>
+<p>When one weight moves, the remainder is spread across the other two in proportion to their current values. The output is integers that sum to exactly 100, which needs an explicit rounding-remainder step — this is where naive implementations drift to 99 or 101.</p>
+<pre><code>rebalance(weights, changedKey, newValue):
+  newValue  = clamp(newValue, 0, 100)
+  remaining = 100 - newValue
+  others    = the two keys that did not change
+  othersSum = sum(weights[others])
+
+  if othersSum === 0:  split remaining evenly
+  else:                weights[o] = remaining * (weights[o] / othersSum)
+
+  round each, then push the leftover 1 or 2 onto the largest bucket
+  invariant: result always sums to 100</code></pre>
+
+<h3>Pins</h3>
+<p>A pin is an absolute slot claim held in its own map, entirely outside the scoring pipeline. Ranking runs normally, pinned players are lifted out, and the remaining players fill the gaps around them in computed order.</p>
+<pre><code>pins = { playerId: slotIndex }
+
+1. score and sort everyone normally
+2. remove pinned players from that list
+3. place pinned players at their claimed slots
+4. fill remaining slots in order with the rest
+
+changing weights re-runs steps 1, 2, 4 — pins never move</code></pre>
+
+<h3>Value over replacement, for one cross-position board</h3>
+<p>Within-position z-scores cannot be compared across positions directly, so a single overall board needs a baseline. Subtract the score of the last starter-quality player at each position, using league size times starters per position.</p>
+<pre><code>replacementIndex(pos) = leagueTeams * startersAt(pos)
+baseline(pos)         = score of the player at that index within pos
+vorScore              = score - baseline(position)</code></pre>
+
+<h2>Project infrastructure</h2>
+<p>Jira and GitHub are set up and the tickets are imported. The board is team-managed Kanban with the Sprints feature turned off, so milestones are tracked by the Epic field rather than by sprints — pull the whole of a milestone from Backlog onto the Board, finish it, then pull the next.</p>
+
+<table>
+  <thead><tr><th>Item</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Jira site</td><td><code>joshuavaneps.atlassian.net</code></td></tr>
+    <tr><td>Jira project</td><td>Custom Weighted Draft Board &middot; key <code>DRAFT</code> &middot; team-managed Kanban</td></tr>
+    <tr><td>Board columns</td><td>Ready for Work → In Progress → Peer Review → PR Approved → QA → QA Pass → Done</td></tr>
+    <tr><td>Custom field</td><td><b>Acceptance Criteria</b> (rich text) on the Story type</td></tr>
+    <tr><td>Estimate field</td><td><b>Story point estimate</b> (team-managed naming)</td></tr>
+    <tr><td>GitHub repo</td><td><code>JoshuaVaneps/fantasy-weighted-ranking</code> (public)</td></tr>
+    <tr><td><span class="rev">Production host</span></td><td><span class="rev">Vercel — static build plus a serverless proxy function (DRAFT-49)</span></td></tr>
+  </tbody>
+</table>
+
+<p>The GitHub for Jira app isn't connected yet, which doesn't block anything. It backfills up to six months of branch, commit, and pull request history when you do connect it, so everything committed with a valid Jira key from day one will be picked up retroactively.</p>
+
+<h2>Working agreement</h2>
+<p>The point of the ticket structure is to rehearse a real delivery flow, so the git conventions matter as much as the code. One ticket, one branch, one pull request, merged before the next one starts.</p>
+<ul>
+  <li><b>Branch:</b> <code>feat/DRAFT-22-weight-rebalance</code> — type, Jira key, short slug.</li>
+  <li><b>Commit:</b> <code>DRAFT-22: add weight rebalance with rounding remainder</code> — Jira key first so the push links automatically.</li>
+  <li><b>Pull request title:</b> same as the commit. Body lists the acceptance criteria as checkboxes.</li>
+  <li><b>Column flow:</b> In Progress while building, Peer Review when the PR opens, PR Approved on approval, QA while you verify the acceptance criteria against the running app, QA Pass, then Done on merge. Working solo, Peer Review and QA are you re-reading your own diff with fresh eyes — which is the habit worth building, not ceremony to skip.</li>
+  <li><b>Definition of done:</b> acceptance criteria met, unit tests written for anything in <code>data</code>, <code>scoring</code>, or <code>state</code>, lint clean, app still runs, and the README updated if a module boundary changed.</li>
+  <li><b>Never</b> merge a red test suite or a ticket that leaves the app unable to start. Every merge point is a working app.</li>
+  <li><span class="rev"><b>Off-plan work takes a real Jira key</b>, never an invented one and never a silent addition to an existing ticket. DRAFT-47, DRAFT-48, and DRAFT-49 all followed this, and it is what keeps the board honest about what was actually built.</span></li>
+</ul>
+
+<h2>Milestones</h2>
+<p>Four milestones, each ending at something you could show someone. <span class="rev">109 scheduled story points after revision 2, up from 106 — two for the deploy ticket and one for the join amendment folded into DRAFT-18.</span></p>
+
+<table>
+  <thead><tr><th>Milestone</th><th>Tickets</th><th>You can demo</th><th>Pts</th></tr></thead>
+  <tbody>
+    <tr class="done"><td><b>M1 · Walking Skeleton</b></td><td class="dep">DRAFT-6 – 16</td><td>Real players from joined feeds, on screen, in consensus order</td><td class="pts">27 <span class="st st-done">done</span></td></tr>
+    <tr><td><b>M2 · The Core Feature</b></td><td class="dep">DRAFT-17 – 25</td><td>Drag the mix, the board re-sorts live — the actual idea, working</td><td class="pts"><span class="rev">31</span></td></tr>
+    <tr><td><b>M3 · Control &amp; Explanation</b></td><td class="dep">DRAFT-26 – 32</td><td>Why each player ranks there, plus manual pins that survive re-scoring</td><td class="pts">24</td></tr>
+    <tr><td><b>M4 · Ship</b></td><td class="dep">DRAFT-33 – 40, 49</td><td>Saved boards, graceful failures, injury badges, keyboard-complete, deployed</td><td class="pts"><span class="rev">27</span></td></tr>
+    <tr><td>Backlog · not scheduled</td><td class="dep">DRAFT-41</td><td>Scoring format toggle</td><td class="pts">3</td></tr>
+  </tbody>
+</table>
+
+<div class="win"><strong>If you only have two weeks:</strong> M1 plus M2 is a complete, defensible capstone that satisfies every line of the rubric. M3 and M4 make it a tool you would actually open on draft day. Stop cleanly at the end of M2 rather than half-finishing M3.</div>
+
+<h2>Tickets</h2>
+<p>Ordered so that every ticket's dependencies are already merged. Take them top to bottom.</p>
+
+<div class="ms"><h3>M1 · Walking Skeleton</h3><span>DRAFT-6 to DRAFT-16 &middot; 27 pts &middot; complete</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>What it delivered</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr class="done"><td class="tid">DRAFT-6<br><span class="st st-done">done</span></td><td>Spike: verify tier endpoints, parameters, and CORS</td>
+    <td>Roughly 100 live calls including negative tests, a join cross-reference, a CORS preflight, and a rate-limit burst. CORS is refused so a proxy is mandatory, the join key is verified clean, half-PPR turned out fully supported, and rate limiting exists undocumented. Evidence in <code>docs/api-notes.md</code>.</td>
+    <td class="dep">—</td><td class="pts">2</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-7<br><span class="st st-done">done</span></td><td>Scaffold repo on Vite vanilla template</td>
+    <td><code>src/{api,data,scoring,state,ui}</code> skeleton, ESLint with Prettier, npm scripts for dev, build, lint, and test.</td>
+    <td class="dep">—</td><td class="pts">2</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-8<br><span class="st st-done">done</span></td><td>Add Vitest and coverage</td>
+    <td>jsdom environment for UI tests and node for pure modules, coverage reporter, watch mode.</td>
+    <td class="dep">DRAFT-7</td><td class="pts">1</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-9<br><span class="st st-done">done</span></td><td>Dev proxy and API key configuration</td>
+    <td>Vite <code>server.proxy</code> forwards <code>/api/*</code> to FantasyPros with <code>x-api-key</code> attached server-side. The key lives in a gitignored <code>.env.local</code>.</td>
+    <td class="dep">DRAFT-6, DRAFT-7</td><td class="pts">2</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-10<br><span class="st st-done">done</span></td><td>API client with structured errors</td>
+    <td><code>request()</code> wrapper: timeout, exponential backoff on 429, echo-validation of <code>year</code>, <code>scoring</code>, and <code>positions</code> against the request, and classified error shapes — auth 403 distinguished from wrong-path 403, validation 400, rate limit, server error. No 401 case, because this API never returns one.</td>
+    <td class="dep">DRAFT-9</td><td class="pts">4</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-11<br><span class="st st-done">done</span></td><td>Endpoint modules for the four datasets</td>
+    <td><code>getConsensus</code>, <code>getProjections</code>, <code>getPriorSeason</code>, and <code>getInjuries</code> with locked params, one shared <code>SCORING</code> constant, and JSDoc typedefs of the raw shapes. <code>getProjections()</code> reads <code>stats.points_ppr</code> and carries an inline comment saying the param is ignored, because it reads as a bug otherwise.</td>
+    <td class="dep">DRAFT-10</td><td class="pts">3</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-12<br><span class="st st-done">done</span></td><td>Fixture capture script</td>
+    <td><code>npm run capture</code> snapshots every live endpoint to <code>/fixtures</code> for offline development and network-free tests.</td>
+    <td class="dep">DRAFT-11</td><td class="pts">2</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-13<br><span class="st st-done">done</span></td><td>Join the feeds into one Player list</td>
+    <td><code>joinPlayers()</code> — pure, merges consensus, player-points, and projections on the FantasyPros id with consensus as the spine, tracking unmatched entries per feed. <span class="rev">Amended by DRAFT-18, which restores the <code>average</code> field this join dropped.</span></td>
+    <td class="dep">DRAFT-12</td><td class="pts">3</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-14<br><span class="st st-done">done</span></td><td>App shell, layout, and design tokens</td>
+    <td>Two-column skeleton collapsing to one under 720px, with the three factor color tokens defined once in <code>:root</code>. A CSS Grid <code>min-width: auto</code> gotcha surfaced here and was fixed with <code>min-width: 0</code> — worth remembering for the mix bar and contribution bars landing in these same cells.</td>
+    <td class="dep">DRAFT-7</td><td class="pts">2</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-15<br><span class="st st-done">done</span></td><td>Hand-rolled state store</td>
+    <td><code>createStore(initial)</code> giving <code>getState</code>, <code>setState</code>, and <code>subscribe</code>. Shallow-equal no-op detection, per-listener error isolation, unsubscribe via closure.</td>
+    <td class="dep">DRAFT-8</td><td class="pts">3</td></tr>
+
+  <tr class="done"><td class="tid">DRAFT-16<br><span class="st st-done">done</span></td><td>Render the board from state</td>
+    <td>The skeleton comes together: parallel fetch, join, sort by consensus, push to the store. <code>renderBoard</code> subscribes and renders loading, error, empty, and ready states as a table, <code>textContent</code> only. Provisional store shape <code>{ status, players, error }</code>.</td>
+    <td class="dep">DRAFT-13, DRAFT-14, DRAFT-15</td><td class="pts">3</td></tr>
+  </tbody>
+</table>
+
+<div class="ms" style="background:var(--muted)"><h3>Off-plan · shipped alongside M1</h3><span>Real Jira keys, no plan ID &middot; unpointed, so milestone totals are unaffected</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>Notes</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr class="done"><td class="tid">DRAFT-47<br><span class="st st-done">done</span></td><td>Add minimal setup README</td>
+    <td>The setup and scripts section only. The full README with the architecture note and rubric mapping is still DRAFT-40.</td>
+    <td class="dep">DRAFT-7</td><td class="pts">—</td></tr>
+
+  <tr><td class="tid">DRAFT-48<br><span class="st st-open">PR #13</span></td><td>Extend API to pull ADP</td>
+    <td>A <code>getPlayers()</code> module against the <code>/players</code> master list, the only feed carrying ADP. Reads <code>rank_adp_ppr</code>, not <code>rank_adp</code>. ADP joins as an optional fourth feed and is <b>not</b> in the fail-fast group — if it fails the board still renders with <code>adp: null</code> and a warning, rather than erroring over a non-critical column.
+    <span class="ac"><span class="rev"><b>Unranked filter, shipped.</b> <code>getPlayers()</code> drops rows where <code>rank_adp_ppr</code> is <code>0</code>, via an extracted pure <code>hasRankedAdp</code> helper so the predicate and the <code>minRows</code> guard test independently. It sits at the API boundary rather than in the capture script, so the live app and the fixture shrink together and cannot drift; <code>joinPlayers</code> was simplified to trust it and its redundant zero-check removed. <code>fixtures/players.json</code> fell from 5.5MB to 444KB on the next <code>npm run capture</code>, and browser output is byte-identical, confirming only noise was removed. <b>A proposed <code>team_id !== "FA"</code> clause was tested and rejected</b> — it would have dropped 101 legitimately ranked players. See the free-agent note in the API contract.</span></span></td>
+    <td class="dep">DRAFT-13</td><td class="pts">—</td></tr>
+  </tbody>
+</table>
+
+<div class="ms"><h3>M2 · The Core Feature</h3><span>DRAFT-17 to DRAFT-25 &middot; 31 pts &middot; next</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>Description &amp; acceptance criteria</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr><td class="tid">DRAFT-18</td><td>Apply the games-played floor to last season</td>
+    <td><span class="rev">Moved ahead of DRAFT-17 in revision 2 — the floor decides which last-season values exist at all, and normalization has to run on the surviving set.</span> Below a configurable games threshold (default 4), treat the factor as missing rather than as poor performance, so an injured starter is not read as a bust.
+    <span class="ac"><b>AC:</b> <span class="rev"><code>joinPlayers</code> carries the feed's own <code>average</code> through as <code>lastSeason.pointsPerGame</code> — a small amendment to the merged DRAFT-13, whose Player shape kept only the season total. Never compute points per game by dividing <code>points</code> by <code>games</code>: the feed's value is authoritative, and any disagreement between the two would be invisible.</span> The floor is configurable and defaults to 4; a player at 3 games reports last season as missing; a player at 16 games computes normally; a missing or zero <code>games</code> value is handled without dividing by zero; verified against a real short season in the fixtures.</span></td>
+    <td class="dep"><span class="rev">DRAFT-13</span></td><td class="pts"><span class="rev">2</span></td></tr>
+
+  <tr><td class="tid">DRAFT-17</td><td>Z-score normalization within position</td>
+    <td>Pure function converting each raw factor to a z-score inside its position group, inverting expert consensus so higher is always better.
+    <span class="ac"><b>AC:</b> a player at the position mean scores 0; consensus inversion verified by test (best rank yields the highest z); a one-player position group yields 0 rather than NaN; a factor that is null stays null rather than becoming 0. <span class="rev">Null factors are excluded from the group's mean and standard deviation — not treated as 0, not treated as a low value. A test asserts that adding a null-factor player to a group leaves every other player's z-score unchanged. This is the guard that makes the DRAFT-18 floor mean anything.</span></span></td>
+    <td class="dep"><span class="rev">DRAFT-18</span></td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-19</td><td>Missing-factor weight redistribution</td>
+    <td>A missing factor's weight is spread proportionally across that player's remaining factors, and the absence is recorded on the player for the UI to badge.
+    <span class="ac"><b>AC:</b> a rookie with no prior season scores from the other two factors; a player missing all three is excluded with a stated reason; <code>missingFactors</code> populated correctly; each case unit tested. <span class="rev">This policy governs the three scoring factors only — ADP has separate unranked semantics and is not part of the blend.</span></span></td>
+    <td class="dep"><span class="rev">DRAFT-17</span></td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-20</td><td>Weighted blend and ranking</td>
+    <td>The one function the UI calls: <code>scoreAll(players, weights)</code> returning a scored, sorted list with ranks assigned. Pure, no side effects.
+    <span class="ac"><b>AC:</b> weights of 100-0-0 reproduce pure consensus order exactly; ties break deterministically by consensus then surname; the returned array is new rather than mutated in place; snapshot test over a fixture. <span class="rev">Reads only <code>rankEcr</code>, <code>lastSeason</code>, and <code>projected</code> — a test asserts <code>player.adp</code> never influences the result.</span></span></td>
+    <td class="dep">DRAFT-19</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-21</td><td>App state shape and memoized selector</td>
+    <td>Define the real state — weights, pins, settings, raw players, active board — and a <code>getRankedPlayers()</code> selector that memoizes on the inputs that actually affect scoring. <span class="rev">This replaces M1's provisional <code>{ status, players, error }</code> shape, which makes it the gate every weight-driven UI ticket sits behind.</span>
+    <span class="ac"><b>AC:</b> changing weights invalidates the memo; changing an unrelated field does not recompute; recomputation measured under 100ms on the full player list.</span></td>
+    <td class="dep">DRAFT-15, DRAFT-20</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-22</td><td>Weight rebalance function</td>
+    <td>Pure <code>rebalance(weights, changedKey, newValue)</code> per the algorithm above, including the rounding-remainder step that guarantees an exact total of 100. <span class="rev">Independent of the scoring chain — it can be built at any point in M2, including first.</span>
+    <span class="ac"><b>AC:</b> a property test over many random inputs asserts the result always sums to exactly 100 with all values between 0 and 100; the both-others-zero case splits evenly; setting one factor to 100 zeroes the others.</span></td>
+    <td class="dep">DRAFT-15</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-23</td><td>Draggable three-segment mix bar</td>
+    <td>One horizontal stacked bar with two draggable dividers, acting as both the control and the visualization of the mix. Uses the three fixed factor colors with a 2px gap between segments.
+    <span class="ac"><b>AC:</b> dragging a divider calls rebalance and updates the board live; keyboard accessible with arrow keys adjusting the focused segment; correct ARIA slider roles and value text; segments always total the full bar width; touch works.</span></td>
+    <td class="dep"><span class="rev">DRAFT-21</span>, DRAFT-22, DRAFT-14</td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-24</td><td>Numeric weight inputs synced to the bar</td>
+    <td>Three number inputs for precise values, kept in sync with the bar in both directions.
+    <span class="ac"><b>AC:</b> typing a value rebalances the other two; the bar and the inputs can never disagree; invalid or out-of-range input is clamped rather than rejected silently.</span></td>
+    <td class="dep">DRAFT-23</td><td class="pts">2</td></tr>
+
+  <tr><td class="tid">DRAFT-25</td><td>Keyed DOM reordering instead of full re-render</td>
+    <td>Replace the naive re-render with keyed updates: reuse existing row nodes keyed by player id and move them, rather than wiping and rebuilding the list on every weight tick.
+    <span class="ac"><b>AC:</b> dragging the mix bar continuously does not lose scroll position or input focus; the DOM node count stays constant across re-sorts; no visible flicker; a test asserts the same node instance persists for a given player across a re-sort.</span></td>
+    <td class="dep">DRAFT-16, DRAFT-21</td><td class="pts">5</td></tr>
+  </tbody>
+</table>
+
+<div class="win"><span class="rev"><strong>Start here.</strong> Two tickets are unblocked right now and do not depend on each other: <b>DRAFT-18</b>, the floor, now the head of the scoring chain, and <b>DRAFT-22</b>, rebalance, which only needs the store that already exists. DRAFT-18 first is the natural order, since the whole M2 chain queues behind it, and DRAFT-22 can be slotted in any time before DRAFT-23.</span></div>
+
+<div class="ms"><h3>M3 · Control &amp; Explanation</h3><span>DRAFT-26 to DRAFT-32 &middot; 24 pts</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>Description &amp; acceptance criteria</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr><td class="tid">DRAFT-26</td><td>Value over replacement for the overall board</td>
+    <td>Subtract a positional replacement baseline so a single cross-position board is meaningful. League size and starters per position are configurable.
+    <span class="ac"><b>AC:</b> with VOR on, the top 20 is not dominated by one position; a toggle disables it and returns to within-position scoring; baselines recompute when league settings change; tested against a hand-checked baseline.</span></td>
+    <td class="dep">DRAFT-20</td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-27</td><td>Position filter and name search</td>
+    <td>Filter chips per position and a text search, composing with the current ranking rather than replacing it.
+    <span class="ac"><b>AC:</b> filters and search compose; ranks shown remain the true board ranks, not renumbered within the filter; clearing restores the full board; search is diacritic and case insensitive.</span></td>
+    <td class="dep">DRAFT-25</td><td class="pts">2</td></tr>
+
+  <tr><td class="tid">DRAFT-28</td><td>Per-player contribution bar</td>
+    <td>A small three-segment bar on each row showing how much each factor contributed to that player's score — the answer to "why is he ranked here."
+    <span class="ac"><b>AC:</b> segment colors match the mix control exactly and never reassign by rank; a missing factor renders as a muted hatched segment with a tooltip naming it; the bar is hidden from screen readers in favour of a text summary on the row.</span></td>
+    <td class="dep">DRAFT-25, DRAFT-20</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-29</td><td>Apply validated factor palette</td>
+    <td>Apply the colorblind-validated tokens across the mix bar, contribution bars, and legend. Colors are already validated: consensus <code>#3d3ad6</code>, last season <code>#c2710c</code>, projections <code>#b5327f</code> (worst adjacent CVD separation ΔE 17.5, all checks pass).
+    <span class="ac"><b>AC:</b> every factor color resolves from a CSS custom property; a legend names all three; no factor is distinguished by color alone anywhere.</span></td>
+    <td class="dep">DRAFT-23, DRAFT-28</td><td class="pts">1</td></tr>
+
+  <tr><td class="tid">DRAFT-30</td><td>Pin model in state and ranking</td>
+    <td>Add pins as a separate state layer and implement the lift-and-fill algorithm so pinned players hold slots while everything else flows around them.
+    <span class="ac"><b>AC:</b> a pinned player holds its slot across weight changes and VOR toggles; unpinning returns the player to computed position; pins at slots beyond the list length are clamped; two pins cannot claim the same slot; fully unit tested against the ranking function.</span></td>
+    <td class="dep">DRAFT-21</td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-31</td><td>Drag to reorder</td>
+    <td>Pointer-event drag on board rows; dropping a player creates a pin at that slot. Must work with the keyed rendering from DRAFT-25 rather than fighting it.
+    <span class="ac"><b>AC:</b> works with mouse and touch; a visible drop indicator shows the target slot; dragging is cancellable with Escape; dropping outside the list is a no-op; the board does not re-sort mid-drag.</span></td>
+    <td class="dep">DRAFT-30, DRAFT-25</td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-32</td><td>Pin affordances and keyboard alternative</td>
+    <td>A badge on pinned rows, move-up and move-down controls as a keyboard path equivalent to dragging, an unpin action per row, and a clear-all-pins action.
+    <span class="ac"><b>AC:</b> every drag operation is achievable by keyboard; clear-all asks for confirmation; the pinned count is visible at a glance; badge state stays correct after re-sorts.</span></td>
+    <td class="dep">DRAFT-31</td><td class="pts">3</td></tr>
+  </tbody>
+</table>
+
+<div class="ms"><h3>M4 · Ship</h3><span>DRAFT-33 to DRAFT-40 and DRAFT-49 &middot; 27 pts</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>Description &amp; acceptance criteria</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr><td class="tid">DRAFT-33</td><td>Persistence layer with schema versioning</td>
+    <td>Save and load boards from localStorage as <code>{ id, name, weights, pins, settings, schemaVersion, createdAt, updatedAt }</code>. Computed rankings are never written.
+    <span class="ac"><b>AC:</b> round-trip test restores identical state; an unknown or older <code>schemaVersion</code> is handled without throwing; corrupt JSON is caught and reported rather than white-screening the app; a test asserts no computed list is present in the stored payload.</span></td>
+    <td class="dep">DRAFT-30</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-34</td><td>Board manager UI</td>
+    <td>Create, rename, duplicate, switch, and delete saved boards, with the active board restored on reload.
+    <span class="ac"><b>AC:</b> switching boards recomputes rankings from that board's weights and pins; duplicate produces an independent copy; delete confirms; the active board persists across reload; at least one board always exists.</span></td>
+    <td class="dep">DRAFT-33</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-35</td><td>Cache API responses with a TTL</td>
+    <td>Persist fetched datasets with a timestamp so a reload does not re-hit the API. Add a manual refresh and a staleness indicator. This is the hand-rolled version of what TanStack Query does for you in capstone 3.
+    <span class="ac"><b>AC:</b> TTL defaults to <b>20 minutes</b>, matching upstream's <code>cache-control: max-age=1200</code> rather than an arbitrary number; a reload within the TTL makes zero network calls; manual refresh forces a fetch; the UI shows how old the data is; a failed refresh keeps cached data rather than clearing it. Document that upstream's CDN cache does not vary on the API key, so a response can be up to 20 minutes stale no matter what this cache does.</span></td>
+    <td class="dep">DRAFT-11, DRAFT-33</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-36</td><td>Loading, empty, and per-factor error states</td>
+    <td>Make one failed dataset degrade only that factor rather than blanking the app — the same partial-failure discipline the portal needs.
+    <span class="ac"><b>AC:</b> if projections fail to load, the app still ranks on the other two and states which factor is unavailable; the mix control disables the missing factor's segment; a total failure of all three shows a retry rather than an empty board; each path tested with a mocked failure. <span class="rev">The ADP feed already follows this pattern from DRAFT-48 — reuse that shape rather than inventing a second one.</span></span></td>
+    <td class="dep">DRAFT-16, DRAFT-19</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-37</td><td>Accessibility pass</td>
+    <td>Full keyboard path, visible focus, correct ARIA on the mix bar and board, and contrast verification across all interactive states.
+    <span class="ac"><b>AC:</b> every task — adjust the mix, filter, pin, reorder, save a board — completable by keyboard alone; axe scan reports no critical or serious issues; focus is never trapped or lost after a re-sort; the board exposes a meaningful reading order.</span></td>
+    <td class="dep">DRAFT-32, DRAFT-24</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid">DRAFT-38</td><td>Draft-day mode</td>
+    <td>Mark players as drafted, track your roster slots, and highlight the best available player at a position you still need. This is what makes the tool worth opening in August.
+    <span class="ac"><b>AC:</b> drafted players can be hidden or struck through by toggle; drafted state is saved per board so a mock draft does not pollute the real one; roster needs derive from configurable starting slots; best-available-at-need is highlighted on the board.</span></td>
+    <td class="dep">DRAFT-34</td><td class="pts">5</td></tr>
+
+  <tr><td class="tid">DRAFT-39</td><td>Injury status badge on the board</td>
+    <td>Show a status badge on each affected row from the <code>/injuries</code> feed, so a player who is questionable or out is visible without leaving the board. Status affects display only — it never changes the score, since how to weigh an injury is a judgement call the user makes. <span class="rev"><code>getInjuries()</code> already exists and is tested from DRAFT-11; it is simply not called anywhere yet.</span>
+    <span class="ac"><b>AC:</b> badge shows current status with both a color and a text label, never color alone, using <code>status_short</code>; players with no injury record render no badge; a failed injuries call degrades to no badges rather than blocking the board; status is included in the row's screen-reader summary; stale injury data is subject to the same TTL as the other feeds.</span></td>
+    <td class="dep">DRAFT-35, DRAFT-36</td><td class="pts">3</td></tr>
+
+  <tr><td class="tid"><span class="rev">DRAFT-49</span></td><td><span class="rev">Production proxy and first deploy</span></td>
+    <td><span class="rev"><b>New in revision 2.</b> Nothing in the original 35 tickets stood up the production proxy, even though the plan's own locked decision says a static-only deploy is impossible. Port the dev proxy's logic — attach <code>x-api-key</code>, forward the request — into a Vercel serverless function, and deploy.</span>
+    <span class="ac"><span class="rev"><b>AC:</b> a serverless function under <code>/api</code> forwards to FantasyPros with the key attached server-side; the key is set as a Vercel environment variable and appears nowhere in the built bundle or in any request the browser can observe; the deployed app loads a real board end to end; dev and production route through the same request-shaping code rather than two divergent copies; the deployed URL is recorded in the README. Can be pulled forward to the end of M2 — the proxy shape already exists, and deploying early surfaces environment problems while there is still time to fix them.</span></span></td>
+    <td class="dep"><span class="rev">DRAFT-9, DRAFT-25</span></td><td class="pts"><span class="rev">2</span></td></tr>
+
+  <tr><td class="tid">DRAFT-40</td><td>README, architecture note, and capstone write-up</td>
+    <td>Document setup, the module map, the normalization and rebalance math, and the decisions log — plus an explicit mapping from the app to each rubric requirement. <span class="rev">Extends DRAFT-47's minimal setup section rather than replacing it.</span>
+    <span class="ac"><b>AC:</b> a clean clone runs from README instructions alone; the scoring math is explained well enough for someone else to verify it; screenshots included; the rubric mapping table is present.</span></td>
+    <td class="dep">all</td><td class="pts">2</td></tr>
+  </tbody>
+</table>
+
+<div class="ms" style="background:var(--muted)"><h3>Backlog · not scheduled</h3><span>Nice to have &middot; 3 pts</span></div>
+<table>
+  <thead><tr><th>Ticket</th><th>Title</th><th>Description &amp; acceptance criteria</th><th>Deps</th><th>Pts</th></tr></thead>
+  <tbody>
+  <tr><td class="tid">DRAFT-41</td><td>Scoring format toggle (STD and PPR)</td>
+    <td>Let the user switch scoring format. Out of scope for v1 as a scope choice only — the spike confirmed <b>all three formats are fully supported</b>, including half-PPR, so any of them would be exact rather than approximated. <code>player-points</code> honours <code>scoring=HALF</code>, and projections ships <code>points</code>, <code>points_ppr</code>, and <code>points_half</code> together.
+    <span class="ac"><b>AC:</b> switching format refetches the affected factors and rescores; the active format is saved per board; the UI states which format the board is built on; projections switches by reading a different <code>stats</code> field rather than by changing a parameter, since that endpoint ignores <code>scoring</code>.</span></td>
+    <td class="dep">DRAFT-34</td><td class="pts">3</td></tr>
+  </tbody>
+</table>
+
+<h2>Risks worth watching</h2>
+<p>The spike retired two of these and surfaced a new one. M1 closed a third and taught a fourth. What remains is visible early enough to handle if you are looking for it.</p>
+
+<p><b>Rate limiting is the live one.</b> It exists, it is undocumented, and it announces itself in no header — a burst produced eleven <code>429</code>s with no <code>Retry-After</code> to read. Backoff landed in DRAFT-10, and it still touches the capture script in DRAFT-12, the cache in DRAFT-35, and error states in DRAFT-36. Nothing here is hard, but it is invisible until you trip it.</p>
+
+<p><b>Silent wrong data outranks silent failure.</b> This API answers bad input with <code>200</code> and plausible-looking wrong values — a missing position list quietly becomes RB, an out-of-range season quietly becomes the current one, and a lapsed subscription quietly becomes ten players. Every one of those renders a board that looks fine. Echo-validation in DRAFT-10 is the defence, and it shipped.</p>
+
+<p><span class="rev"><b>Contaminated baselines are the new one, and they are the same failure shape one layer up.</b> A z-score computed over a distribution that includes players it should have excluded produces a board that is wrong everywhere and looks right everywhere — no error, no NaN, no empty state, just a subtly mis-ranked list. The floor ordering and the null-exclusion rule in DRAFT-17 exist for exactly this, and they are why DRAFT-17 carries five points for what looks like ten lines of arithmetic. Verify it against a hand-computed position group before moving on.</span></p>
+
+<p><b>Coverage, not keys, is what is left of the join risk.</b> The identity match is a verified clean integer, so the old name-matching worry is retired. What remains is players present in one feed and absent from another, which is why DRAFT-13 built an unmatched report.</p>
+
+<p><span class="rev"><b>The <code>/players</code> fixture is now a filtered snapshot, not a faithful one.</b> DRAFT-48's unranked filter runs inside <code>getPlayers()</code>, so <code>fixtures/players.json</code> holds only PPR-ranked players. That is the right trade — it keeps the live app and the fixture identical, which a capture-time filter would not have — but it has one forward consequence worth remembering. If DRAFT-41 ever switches the board to STD, the ADP column wants <code>rank_adp</code>, and any player ranked in STD but not in PPR is no longer in the fixture. Re-capture before assuming the fixture can answer a question the current filter was not written for. Note also that <code>/players</code> carries <code>rank_ecr_half</code> but no <code>rank_adp_half</code>, so a half-PPR board has no matching ADP source at all.</span></p>
+
+<p><span class="rev"><b>Real data finds what synthetic fixtures do not.</b> M1's unit tests were green while two real bugs sat in the running app — floating-point display noise and a CSS Grid <code>min-width: auto</code> blowout — because the test fixtures were clean and synthetic. Both were found by opening the browser. Keep loading the real board at the end of every ticket, not just the test suite.</span></p>
+
+<p><b>Scope creep lives in draft-day mode.</b> DRAFT-38 could expand into league sync, keeper rules, auction values, and trade logic indefinitely. It is deliberately the last feature ticket. If M4 is running long, ship without it — the capstone is already complete at the end of M2. <span class="rev">DRAFT-48 was the first live instance of this pressure and was absorbed cleanly by keeping ADP display-only. The rule that made it cheap is worth reusing: new data enriches the board, it does not enter the blend.</span></p>
+
+<footer>
+  Revision 2, 2026-08-19 — plan IDs retired, scoring chain reordered, join amendment and deploy ticket added. Companion to the three-capstone plan. Factor palette validated for colorblind separation and surface contrast; all six checks pass in light mode. API contract verified by the DRAFT-6 spike, evidence in <code>docs/api-notes.md</code>. Historical plan-ID lookup lives in <code>docs/jira-key-mapping.md</code>; the formula was Jira key = plan ID + 5, and it applies to nothing numbered above DRAFT-41.
+</footer>
+</main>
+</body>
+</html>

@@ -5,7 +5,7 @@ consensus (ECR), last season's production, and current-season projections. Weigh
 adjustable and the board re-sorts live. Manual pins override the math. Boards are saved
 per draft.
 
-Build plan, math, and the full ticket list live in [`docs/build-plan.html`](docs/build-plan.html).
+Build plan, math, and the full ticket list live in [`docs/buildplan.html`](docs/buildplan.html).
 Architecture and API notes live in [`docs/api-notes.md`](docs/api-notes.md).
 
 ## Status
