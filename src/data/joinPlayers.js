@@ -37,9 +37,10 @@
  * @param {object[]} feeds.consensus - raw `players` array from getConsensus()
  * @param {object[]} feeds.playerPoints - raw `players` array from getPriorSeason()
  * @param {object[]} feeds.projections - raw `players` array from getProjections()
- * @param {object[]} [feeds.players] - raw `players` array from getPlayers(),
- *   the master list — the only source of ADP. Optional: omit it and every
- *   player's `adp` comes back null.
+ * @param {object[]} [feeds.players] - `players` array from getPlayers(), the
+ *   only source of ADP. getPlayers() already filters to players with a real
+ *   ADP, so anything present here is trusted as-is. Optional: omit it and
+ *   every player's `adp` comes back null.
  * @returns {JoinResult}
  */
 export function joinPlayers({ consensus, playerPoints, projections, players = [] }) {
@@ -75,9 +76,7 @@ export function joinPlayers({ consensus, playerPoints, projections, players = []
         ? { points: lastSeason.points, games: lastSeason.games }
         : null,
       projected: projected ? projected.stats.points_ppr : null,
-      // The master list carries retired players with rank_adp_ppr: 0,
-      // meaning "unranked" — treat that the same as a missing entry.
-      adp: adpEntry?.rank_adp_ppr > 0 ? adpEntry.rank_adp_ppr : null,
+      adp: adpEntry ? adpEntry.rank_adp_ppr : null,
     }
   })
 

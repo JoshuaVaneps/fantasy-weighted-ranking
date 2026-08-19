@@ -152,19 +152,6 @@ describe('joinPlayers', () => {
     expect(result.players[0].adp).toBeNull()
   })
 
-  it('treats rank_adp_ppr: 0 as unranked, not an ADP of zero', () => {
-    const result = joinPlayers({
-      consensus: [consensusPlayer()],
-      playerPoints: [],
-      projections: [],
-      players: [
-        masterListPlayer({ team_id: 'FA', rank_adp: 0, rank_adp_ppr: 0 }),
-      ],
-    })
-
-    expect(result.players[0].adp).toBeNull()
-  })
-
   it('defaults adp to null for everyone when the players feed is omitted', () => {
     const result = joinPlayers({
       consensus: [consensusPlayer()],

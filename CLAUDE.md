@@ -108,9 +108,13 @@ behind every rule below: `docs/api-notes.md`.
   `/players`, the player master list (verified in DRAFT-48), joined on the same
   FantasyPros id. Read `rank_adp_ppr`, not `rank_adp` (STD), per the PPR-everywhere
   rule. That master list is an **all-time roster**: retired players are included and
-  carry `rank_adp_ppr: 0`, meaning unranked, not an ADP of zero — treat it as missing.
-  ADP is a fourth *display* column, not a fourth blend input; `scoreAll()` must never
-  read `player.adp`.
+  carry `rank_adp_ppr: 0`, meaning unranked, not an ADP of zero. `getPlayers()`
+  (`src/api/players.js`) filters this out at the boundary — anything reaching
+  `joinPlayers` is already trustworthy, so don't re-add a zero-check downstream.
+  `team_id === 'FA'` is **not** a safe stand-in for "unranked" — some players briefly
+  carry it while still having a real ADP; `rank_adp_ppr > 0` alone is the correct
+  filter. ADP is a fourth *display* column, not a fourth blend input; `scoreAll()`
+  must never read `player.adp`.
 
 ### Guarding the boundary
 
