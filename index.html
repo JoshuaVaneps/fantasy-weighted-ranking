@@ -6,7 +6,21 @@
     <title>Draft Board</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <header class="app-header">
+        <h1>Draft Board</h1>
+      </header>
+      <main class="app-layout">
+        <section id="control-panel" class="control-panel" aria-labelledby="control-panel-heading">
+          <h2 id="control-panel-heading">Controls</h2>
+          <p class="placeholder">Weight sliders and pins will go here.</p>
+        </section>
+        <section id="board" class="board" aria-labelledby="board-heading">
+          <h2 id="board-heading">Board</h2>
+          <p class="placeholder">Ranked players will go here.</p>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
