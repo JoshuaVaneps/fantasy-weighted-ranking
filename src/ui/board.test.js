@@ -11,6 +11,7 @@ function player(overrides = {}) {
     rankEcr: 5,
     lastSeason: { points: 200, games: 16 },
     projected: 220,
+    adp: 8,
     ...overrides,
   }
 }
@@ -80,6 +81,27 @@ describe('renderBoard', () => {
 
     expect(el.textContent).toContain('290')
     expect(el.textContent).not.toContain('289.99999999999994')
+  })
+
+  it('renders the ADP column value for a player', () => {
+    const el = container()
+    const players = [player({ adp: 12 })]
+
+    renderBoard(el, { status: 'ready', players })
+
+    const headers = [...el.querySelectorAll('thead th')].map((th) => th.textContent)
+    expect(headers).toContain('ADP')
+    expect(el.querySelector('tbody tr').textContent).toContain('12')
+  })
+
+  it('renders a dash for a player missing from the ADP feed', () => {
+    const el = container()
+    const players = [player({ adp: null })]
+
+    renderBoard(el, { status: 'ready', players })
+
+    const cells = el.querySelectorAll('tbody td')
+    expect([...cells].some((td) => td.textContent === '—')).toBe(true)
   })
 
   it('re-renders cleanly when called again with new state', () => {
