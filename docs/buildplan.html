@@ -126,7 +126,7 @@
 
 <h2>Ticket numbering — one scheme only</h2>
 
-<div class="note"><strong>Plan IDs are retired as of revision 2.</strong> This document originally carried two identifiers per ticket: a sequential plan ID and the real Jira key, offset by five. That was survivable while the ranges did not overlap. They now do — M2 spans plan DRAFT-12 to 20 and Jira DRAFT-17 to 25, so <b>eight distinct tickets were competing for four names inside a single milestone</b>, and the two most likely next tickets both answered to "DRAFT-17." Every identifier here is now the Jira key, which is also what branch names, commit messages, and the board use. <code>docs/jira-key-mapping.md</code> stays as a lookup for reading M1's older handoffs; nothing new should use a plan ID.</div>
+<div class="note"><strong>Plan IDs are retired as of revision 2.</strong> This document originally carried two identifiers per ticket: a sequential plan ID and the real Jira key, offset by five. That was survivable while the ranges did not overlap. They now do — M2 spans plan DRAFT-12 to 20 and Jira DRAFT-17 to 25, so <b>eight distinct tickets were competing for four names inside a single milestone</b>, and the two most likely next tickets both answered to "DRAFT-17." Every identifier here is now the Jira key, which is also what branch names, commit messages, and the board use. <code>docs/jirakeymapping.md</code> stays as a lookup for reading M1's older handoffs; nothing new should use a plan ID.</div>
 
 <p>The mapping, for reference: <code>Jira key = plan ID + 5</code>. Plan DRAFT-1 was Jira DRAFT-6; plan DRAFT-36 was Jira DRAFT-41. <span class="rev">Off-plan tickets sit outside that formula entirely — DRAFT-47, DRAFT-48, and DRAFT-49 have no plan ID and never did, so the formula applies to nothing numbered above DRAFT-41.</span></p>
 
@@ -563,7 +563,7 @@ vorScore              = score - baseline(position)</code></pre>
 <p><b>Scope creep lives in draft-day mode.</b> DRAFT-38 could expand into league sync, keeper rules, auction values, and trade logic indefinitely. It is deliberately the last feature ticket. If M4 is running long, ship without it — the capstone is already complete at the end of M2. <span class="rev">DRAFT-48 was the first live instance of this pressure and was absorbed cleanly by keeping ADP display-only. The rule that made it cheap is worth reusing: new data enriches the board, it does not enter the blend.</span></p>
 
 <footer>
-  Revision 2, 2026-08-19 — plan IDs retired, scoring chain reordered, join amendment and deploy ticket added. Companion to the three-capstone plan. Factor palette validated for colorblind separation and surface contrast; all six checks pass in light mode. API contract verified by the DRAFT-6 spike, evidence in <code>docs/api-notes.md</code>. Historical plan-ID lookup lives in <code>docs/jira-key-mapping.md</code>; the formula was Jira key = plan ID + 5, and it applies to nothing numbered above DRAFT-41.
+  Revision 2, 2026-08-19 — plan IDs retired, scoring chain reordered, join amendment and deploy ticket added. Companion to the three-capstone plan. Factor palette validated for colorblind separation and surface contrast; all six checks pass in light mode. API contract verified by the DRAFT-6 spike, evidence in <code>docs/api-notes.md</code>. Historical plan-ID lookup lives in <code>docs/jirakeymapping.md</code>; the formula was Jira key = plan ID + 5, and it applies to nothing numbered above DRAFT-41.
 </footer>
 </main>
 </body>

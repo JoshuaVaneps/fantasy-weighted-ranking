@@ -2,9 +2,9 @@
 
 **Plan IDs are retired as of build-plan revision 2 (2026-08-19).**
 
-This table exists to decode M1-era documents — the DRAFT-6 spike handoff, the project
-handoff, the M1 wrap-up — which carried both a plan ID and a Jira key. `docs/build-plan.html`
-now uses Jira keys exclusively, and nothing new should introduce a plan ID.
+This table exists to decode M1-era documents — the M1 wrap-up and others that carried
+both a plan ID and a Jira key. `docs/buildplan.html` now uses Jira keys exclusively, and
+nothing new should introduce a plan ID.
 
 **Why it was retired:** M2 spans plan DRAFT-12 to 20 and Jira DRAFT-17 to 25. Those ranges
 overlap, so eight distinct tickets were competing for four names inside a single milestone —
@@ -67,7 +67,6 @@ These have no plan ID and never did. The formula does not apply to them.
 These carry plan IDs and need this table:
 
 - `docs/api-notes.md` — mixed; §5 and §10 reference Jira keys, the header references both
-- the DRAFT-6 spike handoff — §4 uses "plan / Jira" pairs, §6 uses bare Jira keys
 - the project handoff — uses "plan DRAFT-n" prefixed throughout
 - the M1 wrap-up — Jira keys with plan IDs in parentheses
 

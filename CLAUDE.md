@@ -188,10 +188,10 @@ own cache layer (DRAFT-30).
   **Plan IDs are retired as of `docs/buildplan.html` revision 2 (2026-08-19)** — every
   ticket in that document is now identified by its real Jira key directly, no offset,
   no translation. `docs/jirakeymapping.md` still exists but is historical-only, for
-  decoding older M1-era documents (`docs/api-notes.md`, the DRAFT-6 spike handoff, the
-  M1 wrap-up) that carry plan IDs from before the retirement — nothing new should ever
-  introduce one. Jira only auto-links a commit to a work item when the literal key
-  appears in the branch name or commit message.
+  decoding older M1-era documents (`docs/api-notes.md`, the M1 wrap-up) that carry plan
+  IDs from before the retirement — nothing new should ever introduce one. Jira only
+  auto-links a commit to a work item when the literal key appears in the branch name or
+  commit message.
 - Branch: `feat/DRAFT-18-games-played-floor` (Jira key + short slug).
 - Commit messages start with the Jira key: `DRAFT-18: add games-played floor`.
 - **A deviation not in `docs/buildplan.html`** (an ad hoc request that comes up
