@@ -88,7 +88,9 @@ describe('request', () => {
       parameter: 'position',
       valid_format: 'QB, RB, WR, TE',
     }
-    global.fetch.mockResolvedValue(mockResponse({ ok: false, status: 400, body }))
+    global.fetch.mockResolvedValue(
+      mockResponse({ ok: false, status: 400, body }),
+    )
 
     const result = await request('/2026/consensus-rankings')
 
@@ -106,22 +108,32 @@ describe('request', () => {
 
   it('retries 429s with exponential backoff before giving up', async () => {
     vi.useFakeTimers()
-    global.fetch.mockResolvedValue(mockResponse({ ok: false, status: 429, body: {} }))
+    global.fetch.mockResolvedValue(
+      mockResponse({ ok: false, status: 429, body: {} }),
+    )
 
     const promise = request('/2026/consensus-rankings')
     await vi.runAllTimersAsync()
     const result = await promise
 
-    expect(result).toEqual({ ok: false, error: { type: 'rate_limit', status: 429 } })
+    expect(result).toEqual({
+      ok: false,
+      error: { type: 'rate_limit', status: 429 },
+    })
     expect(global.fetch).toHaveBeenCalledTimes(4)
   })
 
   it('classifies a 500 as a server_error', async () => {
-    global.fetch.mockResolvedValue(mockResponse({ ok: false, status: 500, body: {} }))
+    global.fetch.mockResolvedValue(
+      mockResponse({ ok: false, status: 500, body: {} }),
+    )
 
     const result = await request('/2026/consensus-rankings')
 
-    expect(result).toEqual({ ok: false, error: { type: 'server_error', status: 500 } })
+    expect(result).toEqual({
+      ok: false,
+      error: { type: 'server_error', status: 500 },
+    })
   })
 
   it('reports a parse_error when the body is not valid JSON', async () => {
@@ -135,7 +147,10 @@ describe('request', () => {
 
     const result = await request('/2026/consensus-rankings')
 
-    expect(result).toEqual({ ok: false, error: { type: 'parse_error', status: 200 } })
+    expect(result).toEqual({
+      ok: false,
+      error: { type: 'parse_error', status: 200 },
+    })
   })
 
   it('returns a structured unknown error instead of throwing on a network failure', async () => {
@@ -156,12 +171,20 @@ describe('request', () => {
 
     expect(result).toEqual({
       ok: false,
-      error: { type: 'echo_mismatch', field: 'year', expected: 1999, actual: 2026 },
+      error: {
+        type: 'echo_mismatch',
+        field: 'year',
+        expected: 1999,
+        actual: 2026,
+      },
     })
   })
 
   it('flags a low row count instead of trusting the count field', async () => {
-    const body = { count: 100, players: Array.from({ length: 10 }, (_, id) => ({ id })) }
+    const body = {
+      count: 100,
+      players: Array.from({ length: 10 }, (_, id) => ({ id })),
+    }
     global.fetch.mockResolvedValue(mockResponse({ body }))
 
     const result = await request('/2026/consensus-rankings', {
@@ -171,7 +194,12 @@ describe('request', () => {
 
     expect(result).toEqual({
       ok: false,
-      error: { type: 'low_row_count', rowsKey: 'players', minRows: 50, actual: 10 },
+      error: {
+        type: 'low_row_count',
+        rowsKey: 'players',
+        minRows: 50,
+        actual: 10,
+      },
     })
   })
 })

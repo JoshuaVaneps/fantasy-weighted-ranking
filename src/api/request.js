@@ -74,13 +74,18 @@ async function attempt(path, searchParams, timeoutMs) {
   const timer = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
-    const response = await fetch(buildUrl(path, searchParams), { signal: controller.signal })
+    const response = await fetch(buildUrl(path, searchParams), {
+      signal: controller.signal,
+    })
 
     let body
     try {
       body = await response.json()
     } catch {
-      return { ok: false, error: { type: 'parse_error', status: response.status } }
+      return {
+        ok: false,
+        error: { type: 'parse_error', status: response.status },
+      }
     }
 
     if (!response.ok) {
@@ -99,11 +104,21 @@ async function attempt(path, searchParams, timeoutMs) {
 }
 
 export async function request(path, options = {}) {
-  const { searchParams = {}, timeoutMs = DEFAULT_TIMEOUT_MS, echo, rowsKey, minRows } = options
+  const {
+    searchParams = {},
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+    echo,
+    rowsKey,
+    minRows,
+  } = options
 
   let result = await attempt(path, searchParams, timeoutMs)
 
-  for (let retryCount = 0; result.error?.type === 'rate_limit' && retryCount < MAX_RETRIES; retryCount++) {
+  for (
+    let retryCount = 0;
+    result.error?.type === 'rate_limit' && retryCount < MAX_RETRIES;
+    retryCount++
+  ) {
     await sleep(RETRY_BASE_DELAY_MS * 2 ** retryCount)
     result = await attempt(path, searchParams, timeoutMs)
   }
