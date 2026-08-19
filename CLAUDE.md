@@ -5,7 +5,9 @@ consensus (ECR), last season's production, and current-season projections. Weigh
 adjustable and the board re-sorts live. Manual pins override the math. Boards are saved
 per draft.
 
-Build plan, math, and the full ticket list live in `docs/build-plan.html`.
+Build plan, math, and the full ticket list live in `docs/build-plan.html`. Milestone
+wrap-ups (what shipped, deviations, handoff to the next milestone) live in `docs/`, e.g.
+`docs/m1-wrapup.md`.
 
 ## How I want to work
 
@@ -101,6 +103,14 @@ behind every rule below: `docs/api-notes.md`.
   projections silently defaults to `RB`** — always send it explicitly.
 - **Injury status is display only.** It drives a badge and never touches the score —
   how to weigh an injury is the user's judgement, not the app's.
+- **ADP is display only too, and comes from a different endpoint than the other
+  factors.** There is no `/adp` endpoint — it 403s at both path shapes. ADP lives on
+  `/players`, the player master list (verified in DRAFT-48), joined on the same
+  FantasyPros id. Read `rank_adp_ppr`, not `rank_adp` (STD), per the PPR-everywhere
+  rule. That master list is an **all-time roster**: retired players are included and
+  carry `rank_adp_ppr: 0`, meaning unranked, not an ADP of zero — treat it as missing.
+  ADP is a fourth *display* column, not a fourth blend input; `scoreAll()` must never
+  read `player.adp`.
 
 ### Guarding the boundary
 
@@ -161,6 +171,10 @@ own cache layer (DRAFT-30).
 - Branch: `feat/DRAFT-17-weighted-blend` (Jira key + short slug describing the plan
   ticket, e.g. "weighted-blend" for plan DRAFT-12).
 - Commit messages start with the Jira key: `DRAFT-17: add weighted blend`.
+- **A deviation not in `docs/build-plan.html`** (an ad hoc request that comes up
+  mid-session, e.g. adding ADP in DRAFT-48) still needs a real Jira key before
+  branching. Ask for it — never invent one or skip the link, since that breaks Jira
+  auto-linking silently.
 - **No AI attribution anywhere.** No `Co-Authored-By: Claude`, no "Generated with Claude
   Code", no 🤖 markers, no "written by" credits — not in commit messages, commit
   trailers, PR titles, PR bodies, PR comments, or code comments. This is my capstone and
