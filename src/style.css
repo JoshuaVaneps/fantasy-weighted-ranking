@@ -32,10 +32,30 @@ body {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
+  /* Grid items default to min-width: auto, which lets wide content (the
+     table) force the track wider than it should be — override so the
+     scroll stays contained instead of blowing out the page width. */
+  min-width: 0;
+}
+
+#board-content {
+  overflow-x: auto;
 }
 
 @media (max-width: 720px) {
   .app-layout {
     grid-template-columns: 1fr;
   }
+}
+
+#board-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#board-content th,
+#board-content td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #eee;
 }
