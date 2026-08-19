@@ -303,5 +303,9 @@ on projections and echoed back comma-delimited (`"QB,RB,WR,TE"`).
 ## 12. Open items
 
 - Exact rate-limit threshold not characterised (deliberately — avoiding hammering a paid key).
-- Production proxy host not chosen. Needed before deploy, not before DRAFT-9.
+- Production proxy host: **Vercel**, as a serverless function alongside the static Vite
+  build (same shape validated in dev by DRAFT-9's `server.proxy`, since a serverless
+  function is just a different place to run the same "attach `x-api-key`, forward the
+  request" logic). Standing it up is out of scope here — tracked for the deploy step,
+  not before DRAFT-9.
 - `covids[]` array in the injuries payload not investigated; presumed vestigial.
