@@ -102,7 +102,7 @@ describe('zScoreByPosition', () => {
     expect(withThirdPlayer[2].zScores.lastSeason).toBeNull()
   })
 
-  it('never compares players across position groups', () => {
+  it('never compares lastSeason or projected across position groups', () => {
     const players = [
       player({ id: 1, position: 'WR', rankEcr: 1, lastSeason: { games: 16, pointsPerGame: 30 }, projected: 300 }),
       player({ id: 2, position: 'TE', rankEcr: 1, lastSeason: { games: 16, pointsPerGame: 30 }, projected: 300 }),
@@ -110,10 +110,32 @@ describe('zScoreByPosition', () => {
 
     const [wr, te] = zScoreByPosition(players)
 
-    // each is the only player in their position group, so both are lone-group 0s,
-    // never blended against the other position's numbers
-    expect(wr.zScores).toEqual({ ecr: 0, lastSeason: 0, projected: 0 })
-    expect(te.zScores).toEqual({ ecr: 0, lastSeason: 0, projected: 0 })
+    // each is the only player in their position group for these two factors,
+    // so both are lone-group 0s, never blended against the other position's numbers
+    expect(wr.zScores.lastSeason).toBe(0)
+    expect(wr.zScores.projected).toBe(0)
+    expect(te.zScores.lastSeason).toBe(0)
+    expect(te.zScores.projected).toBe(0)
+  })
+
+  it('computes ecr across the whole player pool, not per position, so 100% consensus weight can reproduce raw consensus order', () => {
+    // by hand: raw ecr [10, 20, 30, 40] as ONE pool -> mean 25, stdev ~11.1803
+    // (a per-position calc would instead split this into two 2-player groups
+    // with mean 15/35 and stdev 5, giving every player z = +-1 — different
+    // numbers entirely, which is the bug this test guards against)
+    const players = [
+      player({ id: 1, position: 'WR', rankEcr: 10 }),
+      player({ id: 2, position: 'WR', rankEcr: 20 }),
+      player({ id: 3, position: 'TE', rankEcr: 30 }),
+      player({ id: 4, position: 'TE', rankEcr: 40 }),
+    ]
+
+    const [wr1, wr2, te1, te2] = zScoreByPosition(players)
+
+    expect(wr1.zScores.ecr).toBeCloseTo(1.3416407865, 8)
+    expect(wr2.zScores.ecr).toBeCloseTo(0.4472135955, 8)
+    expect(te1.zScores.ecr).toBeCloseTo(-0.4472135955, 8)
+    expect(te2.zScores.ecr).toBeCloseTo(-1.3416407865, 8)
   })
 
   it('does not mutate the input array', () => {

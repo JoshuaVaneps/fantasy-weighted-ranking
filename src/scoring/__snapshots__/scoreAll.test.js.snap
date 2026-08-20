@@ -1,0 +1,80 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`scoreAll > matches a snapshot over a curated slice of real fixture data 1`] = `
+[
+  {
+    "id": 23180,
+    "missingFactors": [],
+    "name": "Puka Nacua",
+    "position": "WR",
+    "rank": 1,
+    "score": 0.8172,
+  },
+  {
+    "id": 22936,
+    "missingFactors": [],
+    "name": "Trey McBride",
+    "position": "TE",
+    "rank": 2,
+    "score": 0.7529,
+  },
+  {
+    "id": 17298,
+    "missingFactors": [],
+    "name": "Josh Allen",
+    "position": "QB",
+    "rank": 3,
+    "score": 0.7264,
+  },
+  {
+    "id": 23133,
+    "missingFactors": [],
+    "name": "Bijan Robinson",
+    "position": "RB",
+    "rank": 4,
+    "score": 0.7129,
+  },
+  {
+    "id": 22968,
+    "missingFactors": [],
+    "name": "Jahmyr Gibbs",
+    "position": "RB",
+    "rank": 5,
+    "score": 0.0681,
+  },
+  {
+    "id": 19788,
+    "missingFactors": [],
+    "name": "Ja'Marr Chase",
+    "position": "WR",
+    "rank": 6,
+    "score": -0.4953,
+  },
+  {
+    "id": 22955,
+    "missingFactors": [],
+    "name": "Brock Bowers",
+    "position": "TE",
+    "rank": 7,
+    "score": -0.552,
+  },
+  {
+    "id": 17233,
+    "missingFactors": [],
+    "name": "Lamar Jackson",
+    "position": "QB",
+    "rank": 8,
+    "score": -0.6087,
+  },
+  {
+    "id": 19302,
+    "missingFactors": [
+      "lastSeason",
+    ],
+    "name": "Najee Harris",
+    "position": "RB",
+    "rank": 9,
+    "score": -2.1217,
+  },
+]
+`;
