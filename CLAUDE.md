@@ -64,8 +64,16 @@ default.
   other player's z-score, silently. This ordering was a real correctness bug caught
   before M2 started (build-plan revision 2) — verify normalization against a
   hand-computed position group before trusting it.
-- **Z-scores are computed within position group**, never across positions. Blending
-  raw across positions makes the board all quarterbacks.
+- **Z-scores are computed within position group for `lastSeason` and `projected`
+  only.** Those are raw point totals, and blending them raw across positions makes the
+  board all quarterbacks. **`ecr` is the exception — it's normalized globally, across
+  the whole player pool, not per position.** ECR is already a cross-position expert
+  ranking, not a raw stat total; per-position ECR normalization was a real bug caught
+  in DRAFT-20 (497 of 508 fixture players reordered vs. raw consensus rank at 100%
+  consensus weight, because small position groups like TE produced inflated z-scores
+  disconnected from real consensus standing). `zScoreByPosition` tags each factor with
+  a `scope` (`'global'` for `ecr`, `'position'` for the other two) — do not change ECR
+  back to position-scoped without re-deriving that AC by hand first.
 - **A missing factor is not zero.** Redistribute its weight proportionally across that
   player's remaining factors and record the absence in `missingFactors`. This governs
   the three scoring factors only — ADP has separate unranked semantics (see API rules)
