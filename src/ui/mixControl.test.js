@@ -19,6 +19,11 @@ function fireKey(el, key) {
   el.dispatchEvent(event)
 }
 
+function fireChange(input, value) {
+  input.value = value
+  input.dispatchEvent(new Event('change', { bubbles: true }))
+}
+
 // Stub layout: jsdom doesn't compute real geometry, so give the bar a
 // known rect to translate pointer positions against.
 function stubBarWidth(el, width) {
@@ -48,10 +53,13 @@ describe('createMixControl', () => {
 
     const legendText = el.querySelector('.mix-legend').textContent
     expect(legendText).toContain('Consensus')
-    expect(legendText).toContain('34%')
     expect(legendText).toContain('Last Season')
-    expect(legendText).toContain('33%')
     expect(legendText).toContain('Projected')
+
+    const [ecrInput, lastSeasonInput, projectedInput] = el.querySelectorAll('.mix-weight-input')
+    expect(ecrInput.value).toBe('34')
+    expect(lastSeasonInput.value).toBe('33')
+    expect(projectedInput.value).toBe('33')
   })
 
   it('gives each divider correct ARIA slider attributes', () => {
@@ -77,13 +85,16 @@ describe('createMixControl', () => {
 
     const segmentBefore = el.querySelector('.mix-segment')
     const dividerBefore = el.querySelector('.mix-divider')
+    const inputBefore = el.querySelector('.mix-weight-input')
 
     update({ ecr: 50, lastSeason: 25, projected: 25 })
 
     expect(el.querySelector('.mix-segment')).toBe(segmentBefore)
     expect(el.querySelector('.mix-divider')).toBe(dividerBefore)
+    expect(el.querySelector('.mix-weight-input')).toBe(inputBefore)
     expect(segmentBefore.style.width).toBe('50%')
     expect(dividerBefore.getAttribute('aria-valuenow')).toBe('50')
+    expect(inputBefore.value).toBe('50')
   })
 
   it('arrow keys rebalance the focused divider by 1', () => {
@@ -170,5 +181,78 @@ describe('createMixControl', () => {
     firePointerEvent(firstDivider, 'pointerdown', { clientX: 100, button: 2 })
 
     expect(onWeightsChange).not.toHaveBeenCalled()
+  })
+
+  it('typing a value into a weight input rebalances the other two on change', () => {
+    const el = container()
+    const onWeightsChange = vi.fn()
+    createMixControl(el, WEIGHTS, onWeightsChange)
+    const [ecrInput] = el.querySelectorAll('.mix-weight-input')
+
+    fireChange(ecrInput, '60')
+
+    expect(onWeightsChange).toHaveBeenCalledWith(rebalance(WEIGHTS, 'ecr', 60))
+  })
+
+  it('does not commit on every keystroke, only once the field changes', () => {
+    const el = container()
+    const onWeightsChange = vi.fn()
+    createMixControl(el, WEIGHTS, onWeightsChange)
+    const [ecrInput] = el.querySelectorAll('.mix-weight-input')
+
+    ecrInput.value = '60' // no 'change' event fired yet
+
+    expect(onWeightsChange).not.toHaveBeenCalled()
+  })
+
+  it('clamps an out-of-range typed value instead of rejecting it', () => {
+    const el = container()
+    const onWeightsChange = vi.fn()
+    createMixControl(el, WEIGHTS, onWeightsChange)
+    const [, lastSeasonInput] = el.querySelectorAll('.mix-weight-input')
+
+    fireChange(lastSeasonInput, '999')
+
+    expect(onWeightsChange).toHaveBeenCalledWith(rebalance(WEIGHTS, 'lastSeason', 999))
+    expect(onWeightsChange.mock.calls[0][0].lastSeason).toBe(100)
+  })
+
+  it('clamps an emptied or non-numeric field to 0 instead of rejecting it', () => {
+    const el = container()
+    const onWeightsChange = vi.fn()
+    createMixControl(el, WEIGHTS, onWeightsChange)
+    const [ecrInput] = el.querySelectorAll('.mix-weight-input')
+
+    fireChange(ecrInput, '')
+
+    expect(onWeightsChange).toHaveBeenCalledWith(rebalance(WEIGHTS, 'ecr', 0))
+  })
+
+  it('keeps the bar and the inputs in agreement after a drag, and after typing', () => {
+    const el = container()
+    const onWeightsChange = vi.fn()
+    const { update } = createMixControl(el, WEIGHTS, onWeightsChange)
+    const bar = el.querySelector('.mix-bar')
+    stubBarWidth(bar, 200)
+    const [firstDivider] = el.querySelectorAll('.mix-divider')
+    const [ecrInput, lastSeasonInput, projectedInput] = el.querySelectorAll('.mix-weight-input')
+    const segments = el.querySelectorAll('.mix-segment')
+
+    firePointerEvent(firstDivider, 'pointerdown', { clientX: 100 }) // ecr -> 50
+    const afterDrag = onWeightsChange.mock.calls[0][0]
+    update(afterDrag) // main.js round-tripping the drag's result back in
+
+    expect(ecrInput.value).toBe(String(afterDrag.ecr))
+    expect(lastSeasonInput.value).toBe(String(afterDrag.lastSeason))
+    expect(projectedInput.value).toBe(String(afterDrag.projected))
+    expect(segments[0].style.width).toBe(`${afterDrag.ecr}%`)
+
+    fireChange(lastSeasonInput, '10')
+    const afterTyping = onWeightsChange.mock.calls[1][0]
+    update(afterTyping)
+
+    expect(ecrInput.value).toBe(String(afterTyping.ecr))
+    expect(firstDivider.getAttribute('aria-valuenow')).toBe(String(afterTyping.ecr))
+    expect(segments[0].style.width).toBe(`${afterTyping.ecr}%`)
   })
 })
