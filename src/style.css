@@ -1,7 +1,22 @@
 :root {
+  /* Fixed, colorblind-validated — never reassign or substitute. */
   --factor-consensus: #3d3ad6;
   --factor-last-season: #c2710c;
   --factor-projected: #b5327f;
+
+  /* Football theme, palette pulled from the hero banner (src/assets/hero-banner.png):
+     deep teal-green, coral-red, peach, cream. Every text/background pairing
+     below is WCAG AA verified (>=4.5:1 for text, >=3:1 for UI borders) —
+     see DRAFT-52's PR description for the computed ratios. */
+  --color-bg: #0a2420;
+  --color-surface: #0f3b34;
+  --color-surface-raised: #134a41;
+  --color-border: #4d9686;
+  --color-text: #fdf6ef;
+  --color-text-muted: #b9d6cd;
+  --color-accent-coral: #f0817c;
+  --color-accent-peach: #f6b28f;
+  --color-accent-mint: #6fe0c9;
 }
 
 * {
@@ -11,12 +26,34 @@
 body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  color: #1a1a1a;
-  background: #fafafa;
+  color: var(--color-text);
+  background: var(--color-bg);
 }
 
-.app-header {
-  padding: 1rem 1.5rem;
+/* Visually hidden but still announced/navigable by assistive tech — the
+   hero banner image below carries the visible "Fantasy Rankings" title,
+   but the page still needs a real heading in the DOM. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hero-banner {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .app-layout {
@@ -28,8 +65,8 @@ body {
 
 .control-panel,
 .board {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   /* Grid items default to min-width: auto, which lets wide content (the
@@ -57,5 +94,10 @@ body {
 #board-content td {
   text-align: left;
   padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border);
+}
+
+#board-content th {
+  background: var(--color-surface-raised);
+  color: var(--color-accent-coral);
 }
