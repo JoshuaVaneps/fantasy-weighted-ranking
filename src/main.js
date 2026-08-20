@@ -1,6 +1,6 @@
 import './style.css'
 import { createStore } from './state/store.js'
-import { renderBoard } from './ui/board.js'
+import { createBoard } from './ui/board.js'
 import { getConsensus } from './api/consensus.js'
 import { getPlayers } from './api/players.js'
 import { getPriorSeason } from './api/priorSeason.js'
@@ -25,12 +25,13 @@ const store = createStore({
 const boardContent = document.getElementById('board-content')
 const mixControlContent = document.getElementById('mix-control')
 
+const board = createBoard(boardContent)
 const mixControl = createMixControl(mixControlContent, store.getState().weights, (weights) =>
   store.setState({ weights }),
 )
 
 function render(state) {
-  renderBoard(boardContent, { status: state.status, players: getRankedPlayers(state) })
+  board.update({ status: state.status, players: getRankedPlayers(state) })
   mixControl.update(state.weights)
 }
 
