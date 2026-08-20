@@ -15,6 +15,17 @@ render on screen, sorted by consensus rank, plus an ADP column pulled from the p
 master list. See [`docs/m1-wrapup.md`](docs/m1-wrapup.md) for what shipped, the
 deviations taken, and what M2 (the weighted blend and drag-to-rank UI) needs next.
 
+## Deployment
+
+Live at **https://fantasy-weighted-ranking.vercel.app**
+
+Production runs on Vercel: a static build of `src/` plus `api/proxy.js`, a
+serverless function that attaches the FantasyPros key server-side and forwards
+the request — the same role Vite's dev proxy plays locally. `vercel.json`
+routes every `/api/*` request to that function. The key is stored as a Vercel
+environment variable (`FP_API_KEY`) and never reaches the client bundle or any
+request the browser can see.
+
 ## Setup
 
 1. `npm install`

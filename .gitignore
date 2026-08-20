@@ -13,6 +13,9 @@ dist-ssr/
 # Test/coverage output
 coverage/
 
+# Vercel
+.vercel
+
 # Editor / OS
 .DS_Store
 .vscode/*
@@ -23,3 +26,6 @@ coverage/
 # Logs
 *.log
 npm-debug.log*
+
+.vercel
+.env*
