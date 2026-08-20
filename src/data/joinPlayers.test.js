@@ -71,7 +71,7 @@ describe('joinPlayers', () => {
         tier: 2,
         rankEcr: 15,
         filename: 'test-player.php',
-        lastSeason: { points: 240, games: 16 },
+        lastSeason: { points: 240, games: 16, pointsPerGame: 15 },
         projected: 260,
         adp: null,
       },
@@ -90,6 +90,18 @@ describe('joinPlayers', () => {
 
     expect(result.players[0].lastSeason).toBeNull()
     expect(result.players[0].projected).toBe(260)
+  })
+
+  it('carries the feed\'s own average through as pointsPerGame, never dividing points by games', () => {
+    const result = joinPlayers({
+      consensus: [consensusPlayer()],
+      playerPoints: [
+        playerPointsPlayer({ points: 100, games: 3, average: 33.34 }),
+      ],
+      projections: [],
+    })
+
+    expect(result.players[0].lastSeason.pointsPerGame).toBe(33.34)
   })
 
   it('takes team from consensus, not from a stale team on player-points', () => {

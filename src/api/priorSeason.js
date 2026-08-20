@@ -21,9 +21,10 @@ import { SCORING } from './constants.js'
 
 /**
  * Fetches a season's actual scored points via the player-points endpoint —
- * this is what feeds the "last season" factor once the scoring layer
- * divides it down to points-per-game. There's no endpoint literally named
- * "prior season"; the caller is expected to pass last year's season number.
+ * this is what feeds the "last season" factor, using the feed's own
+ * `average` field for points-per-game rather than deriving it. There's no
+ * endpoint literally named "prior season"; the caller is expected to pass
+ * last year's season number.
  *
  * @param {number} season
  * @returns {Promise<{ok: true, data: PlayerPointsResponse} | {ok: false, error: object}>}
