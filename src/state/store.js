@@ -1,4 +1,4 @@
-function shallowEqual(a, b) {
+export function shallowEqual(a, b) {
   if (a === b) return true;
   const aKeys = Object.keys(a);
   const bKeys = Object.keys(b);

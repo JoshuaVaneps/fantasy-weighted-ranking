@@ -6,16 +6,29 @@ import { getPlayers } from './api/players.js'
 import { getPriorSeason } from './api/priorSeason.js'
 import { getProjections } from './api/projections.js'
 import { joinPlayers } from './data/joinPlayers.js'
-import { sortByConsensus } from './data/sortByConsensus.js'
+import { getRankedPlayers } from './state/selectors.js'
 
 const CURRENT_SEASON = new Date().getFullYear()
 const PRIOR_SEASON = CURRENT_SEASON - 1
 
-const store = createStore({ status: 'loading', players: [], error: null })
+const store = createStore({
+  status: 'loading',
+  error: null,
+  rawPlayers: [],
+  weights: { ecr: 34, lastSeason: 33, projected: 33 },
+  pins: {},
+  settings: {},
+  activeBoardId: null,
+})
 
 const boardContent = document.getElementById('board-content')
-store.subscribe((state) => renderBoard(boardContent, state))
-renderBoard(boardContent, store.getState())
+
+function render(state) {
+  renderBoard(boardContent, { status: state.status, players: getRankedPlayers(state) })
+}
+
+store.subscribe(render)
+render(store.getState())
 
 async function loadPlayers() {
   const [consensus, priorSeason, projections, playersList] = await Promise.all([
@@ -27,7 +40,7 @@ async function loadPlayers() {
 
   const failed = [consensus, priorSeason, projections].find((result) => !result.ok)
   if (failed) {
-    store.setState({ status: 'error', players: [], error: failed.error })
+    store.setState({ status: 'error', rawPlayers: [], error: failed.error })
     return
   }
 
@@ -43,11 +56,10 @@ async function loadPlayers() {
     projections: projections.data.players,
     players: playersList.ok ? playersList.data.players : [],
   })
-  const sorted = sortByConsensus(players)
 
   store.setState({
-    status: sorted.length ? 'ready' : 'empty',
-    players: sorted,
+    status: players.length ? 'ready' : 'empty',
+    rawPlayers: players,
     error: null,
   })
 }
