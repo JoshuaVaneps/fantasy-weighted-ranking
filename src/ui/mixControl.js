@@ -42,9 +42,22 @@ function buildLegendItem(factor) {
   const li = textNode('li', 'mix-legend-item')
   const swatch = textNode('span', 'mix-swatch')
   swatch.style.background = `var(${factor.cssVar})`
-  const value = textNode('strong', 'mix-legend-value')
-  li.append(swatch, `${factor.label} `, value)
-  return { li, value }
+
+  const label = document.createElement('label')
+  label.className = 'mix-legend-label'
+  label.append(`${factor.label} `)
+
+  const input = document.createElement('input')
+  input.type = 'number'
+  input.className = 'mix-weight-input'
+  input.min = '0'
+  input.max = '100'
+  input.step = '1'
+  input.setAttribute('aria-label', `${factor.label} weight percent`)
+  label.append(input, ' %')
+
+  li.append(swatch, label)
+  return { li, input }
 }
 
 /**
@@ -83,10 +96,10 @@ export function createMixControl(container, weights, onWeightsChange) {
   })
 
   const legend = textNode('ul', 'mix-legend')
-  const legendValues = {}
+  const weightInputs = {}
   FACTORS.forEach((factor) => {
-    const { li, value } = buildLegendItem(factor)
-    legendValues[factor.key] = value
+    const { li, input } = buildLegendItem(factor)
+    weightInputs[factor.key] = input
     legend.append(li)
   })
 
@@ -95,6 +108,16 @@ export function createMixControl(container, weights, onWeightsChange) {
   function commit(key, newValue) {
     onWeightsChange(rebalance(currentWeights, key, newValue))
   }
+
+  FACTORS.forEach((factor) => {
+    weightInputs[factor.key].addEventListener('change', (event) => {
+      // An emptied or non-numeric field parses to NaN - clamp it to 0
+      // rather than silently ignoring the edit, per the "never reject
+      // input outright" rule. rebalance() itself clamps the 0-100 range.
+      const parsed = Number(event.target.value)
+      commit(factor.key, Number.isFinite(parsed) ? parsed : 0)
+    })
+  })
 
   // A divider's on-screen position is CUMULATIVE (e.g. divider 1 sits at
   // ecr + lastSeason), but it directly controls only its own factor's
@@ -161,7 +184,7 @@ export function createMixControl(container, weights, onWeightsChange) {
       const factorWeight = nextWeights[factor.key]
       segments[factor.key].style.left = `${cumulative}%`
       segments[factor.key].style.width = `${factorWeight}%`
-      legendValues[factor.key].textContent = `${factorWeight}%`
+      weightInputs[factor.key].value = String(factorWeight)
       cumulative += factorWeight
     })
 
