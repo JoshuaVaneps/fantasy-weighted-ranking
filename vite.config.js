@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
+import { FANTASYPROS_BASE_URL } from './config/fantasypros.js'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -7,7 +8,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: 'https://api.fantasypros.com/public/v2/json/nfl',
+          target: FANTASYPROS_BASE_URL,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           configure: (proxy) => {
