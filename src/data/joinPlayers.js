@@ -8,7 +8,7 @@
  * @property {number} tier
  * @property {number} rankEcr
  * @property {string} filename
- * @property {{points: number, games: number} | null} lastSeason
+ * @property {{points: number, games: number, pointsPerGame: number} | null} lastSeason
  * @property {number | null} projected
  * @property {number | null} adp
  */
@@ -73,7 +73,11 @@ export function joinPlayers({ consensus, playerPoints, projections, players = []
       rankEcr: entry.rank_ecr,
       filename: entry.player_filename,
       lastSeason: lastSeason
-        ? { points: lastSeason.points, games: lastSeason.games }
+        ? {
+            points: lastSeason.points,
+            games: lastSeason.games,
+            pointsPerGame: lastSeason.average,
+          }
         : null,
       projected: projected ? projected.stats.points_ppr : null,
       adp: adpEntry ? adpEntry.rank_adp_ppr : null,
