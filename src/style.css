@@ -101,3 +101,59 @@ body {
   background: var(--color-surface-raised);
   color: var(--color-accent-coral);
 }
+
+.mix-bar {
+  position: relative;
+  height: 2.5rem;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-surface-raised);
+}
+
+.mix-segment {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.mix-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 6px;
+  margin-left: -3px;
+  background: var(--color-surface);
+  cursor: ew-resize;
+  /* Stops the browser's own touch-scroll/zoom gestures from hijacking a
+     drag on mobile, so pointer events are the only thing driving it. */
+  touch-action: none;
+}
+
+.mix-divider:focus-visible {
+  outline: 2px solid var(--color-accent-mint);
+  outline-offset: 2px;
+}
+
+.mix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.mix-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mix-swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+}

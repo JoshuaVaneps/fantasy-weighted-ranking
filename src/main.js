@@ -7,6 +7,7 @@ import { getPriorSeason } from './api/priorSeason.js'
 import { getProjections } from './api/projections.js'
 import { joinPlayers } from './data/joinPlayers.js'
 import { getRankedPlayers } from './state/selectors.js'
+import { createMixControl } from './ui/mixControl.js'
 
 const CURRENT_SEASON = new Date().getFullYear()
 const PRIOR_SEASON = CURRENT_SEASON - 1
@@ -22,9 +23,15 @@ const store = createStore({
 })
 
 const boardContent = document.getElementById('board-content')
+const mixControlContent = document.getElementById('mix-control')
+
+const mixControl = createMixControl(mixControlContent, store.getState().weights, (weights) =>
+  store.setState({ weights }),
+)
 
 function render(state) {
   renderBoard(boardContent, { status: state.status, players: getRankedPlayers(state) })
+  mixControl.update(state.weights)
 }
 
 store.subscribe(render)
